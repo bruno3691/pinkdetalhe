@@ -51,7 +51,7 @@ class CustomFooter extends HTMLElement {
           </div>
 
           <div class="text-center">
-            <p class="text-sm text-white/60">&copy; ${new Date().getFullYear()} PinkDetalhe. Todos os direitos reservados. | CNPJ: 00.000.000/0001-00</p>
+            <p class="text-sm text-white/60">&copy; ${new Date().getFullYear()} PinkDetalhe. Todos os direitos reservados. | CNPJ: 20.077.912/0001-79</p>
           </div>
         </div>
       </footer>
@@ -60,4 +60,5 @@ class CustomFooter extends HTMLElement {
 }
 
 // Define o novo elemento personalizado
+
 customElements.define('custom-footer', CustomFooter);
