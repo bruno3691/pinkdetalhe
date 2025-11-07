@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PinkDetalhe - Adesivos de Unhas Premium | Durabilidade Profissional</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightbox2@2.11.4/dist/css/lightbox.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/lightbox2@2.11.4/dist/js/lightbox.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'light-blush': '#FFF0F5', 
+                        'pink-premium': '#FF69B4',
+                        'deep-rose': '#DB7093',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Carousel: PRIMEIRA IMAGEM VISÍVEL */
+        .carousel-slide {
+            opacity: 0;
+            transition: opacity 0.7s ease-in-out;
+        }
+        .carousel-slide:first-child {
+            opacity: 1;
+        }
+        .carousel-slide.active {
+            opacity: 1 !important;
+        }
+    </style>
+</head>
+<body class="bg-light-blush font-sans">
+    <custom-header></custom-header>
+    
+    <!-- Pop-up de Oferta - RESPONSIVO PARA MOBILE -->
+    <div id="oferta-popup" class="fixed inset-0 z-50 hidden flex items-end sm:items-center justify-center p-2 sm:p-4 bg-black/50 backdrop-blur-sm">
+        <div class="bg-white rounded-t-3xl sm:rounded-2xl shadow-2xl w-full sm:max-w-md sm:w-full overflow-hidden animate-bounce-in max-h-[90vh] sm:max-h-none overflow-y-auto sm:overflow-y-visible">
+            <!-- Header do Pop-up -->
+            <div class="bg-gradient-to-r from-deep-rose to-pink-premium p-4 sm:p-6 text-white text-center relative sticky top-0">
+                <button onclick="fecharPopup()" class="absolute top-3 sm:top-4 right-3 sm:right-4 text-white hover:text-gray-200">
+                    <i data-feather="x" class="w-5 sm:w-6 h-5 sm:h-6"></i>
+                </button>
+                <h2 class="text-2xl sm:text-3xl font-bold mb-1 sm:mb-2">⏰ OFERTA RELÂMPAGO</h2>
+                <p class="text-sm sm:text-lg opacity-90">Válida apenas para os próximos clientes!</p>
+            </div>
+
+            <!-- Conteúdo -->
+            <div class="p-4 sm:p-8 text-center">
+                <!-- Contador de Estoque -->
+                <div class="mb-4 sm:mb-6 p-3 sm:p-4 bg-light-blush rounded-lg border-2 border-pink-premium">
+                    <p class="text-gray-600 text-xs sm:text-sm font-semibold mb-1 sm:mb-2">📦 ESTOQUE LIMITADO</p>
+                    <p class="text-xl sm:text-2xl font-bold text-deep-rose mb-2">Apenas <span data-estoque-count>80</span> kits restantes</p>
+                    <div class="w-full bg-gray-200 rounded-full h-2 sm:h-3 overflow-hidden">
+                        <div id="estoque-bar" class="bg-gradient-to-r from-pink-500 to-red-500 h-full transition-all duration-300" style="width: 100%"></div>
+                    </div>
+                </div>
+
+                <!-- Vendas -->
+                <div class="mb-4 sm:mb-6 p-3 sm:p-4 bg-light-blush rounded-lg">
+                    <p class="text-gray-600 text-xs sm:text-sm font-semibold">🎉 VENDAS ESTA SEMANA</p>
+                    <p class="text-2xl sm:text-3xl font-bold text-pink-premium"><span data-vendidos>578+</span> kits</p>
+                </div>
+
+                <!-- Preço -->
+                <div class="mb-4 sm:mb-6">
+                    <p class="text-gray-500 line-through text-sm sm:text-lg mb-2">De R$ 59,90</p>
+                    <div class="flex items-center justify-center gap-1 sm:gap-2 mb-3 sm:mb-4 flex-wrap">
+                        <span class="text-3xl sm:text-5xl font-bold text-pink-premium">R$29,90</span>
+                        <span class="bg-red-600 text-white font-bold px-2 sm:px-4 py-1 sm:py-2 rounded-full text-xs sm:text-lg">50% OFF</span>
+                    </div>
+                </div>
+
+                <!-- Benefícios -->
+                <div class="text-left mb-4 sm:mb-6 space-y-2 sm:space-y-3">
+                    <div class="flex items-start gap-2 sm:gap-3">
+                        <i data-feather="check-circle" class="w-4 sm:w-5 h-4 sm:h-5 text-green-500 flex-shrink-0 mt-0.5"></i>
+                        <span class="text-xs sm:text-sm text-gray-700">2 Conjuntos de adesivos Premium</span>
+                    </div>
+                    <div class="flex items-start gap-2 sm:gap-3">
+                        <i data-feather="check-circle" class="w-4 sm:w-5 h-4 sm:h-5 text-green-500 flex-shrink-0 mt-0.5"></i>
+                        <span class="text-xs sm:text-sm text-gray-700">Kit de Preparação Completo</span>
+                    </div>
+                    <div class="flex items-start gap-2 sm:gap-3">
+                        <i data-feather="check-circle" class="w-4 sm:w-5 h-4 sm:h-5 text-green-500 flex-shrink-0 mt-0.5"></i>
+                        <span class="text-xs sm:text-sm text-gray-700">Frete Grátis para todo Brasil</span>
+                    </div>
+                </div>
+
+                <!-- Botão CTA -->
+                <button onclick="irParaOferta()" class="w-full bg-gradient-to-r from-pink-500 to-red-500 hover:from-pink-600 hover:to-red-600 text-white font-bold py-3 sm:py-4 rounded-full text-base sm:text-lg transition-all duration-300 transform hover:scale-105 shadow-lg mb-2 sm:mb-3">
+                    APROVEITAR OFERTA AGORA!
+                </button>
+
+                <!-- Botão Fechar -->
+                <button onclick="fecharPopup()" class="w-full text-gray-600 hover:text-deep-rose font-semibold py-2 sm:py-3 text-sm sm:text-base transition-colors">
+                    Talvez depois
+                </button>
+            </div>
+
+            <!-- Aviso de Urgência -->
+            <div class="bg-yellow-50 border-t-2 border-yellow-300 px-4 sm:px-6 py-2 sm:py-3 text-center sticky bottom-0">
+                <p class="text-yellow-800 text-xs sm:text-sm font-semibold">
+                    ⚠️ Esta oferta expira em <span id="timer" class="font-bold">10:00</span>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Botão Flutuante do Instagram -->
+    <a href="https://www.instagram.com/pinkdetalhe/" target="_blank" rel="noopener noreferrer" 
+       class="fixed bottom-6 right-6 z-40 w-12 sm:w-14 h-12 sm:h-14 bg-gradient-to-r from-pink-500 via-pink-600 to-red-600 rounded-full shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-110 flex items-center justify-center group"
+       title="Siga-nos no Instagram">
+        <i class="fab fa-instagram text-white text-xl sm:text-2xl"></i>
+        <span class="absolute bottom-full right-0 mb-2 px-2 sm:px-3 py-1 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
+            Siga no Instagram
+        </span>
+    </a>
+    
+    <main class="w-full">
+        
+        <!-- HERO CAROUSEL COM IMAGENS VISÍVEIS -->
+        <section id="hero-carousel" class="relative text-white mb-8 sm:mb-16 h-48 sm:h-96 md:h-[550px] overflow-hidden rounded-lg shadow-xl mx-2 sm:mx-4 sm:mx-auto sm:container sm:px-4">
+            
+            <div id="carousel-slides" class="w-full h-full relative transition-transform duration-500 ease-in-out">
+                
+                <!-- SLIDE 1 - VISÍVEL POR PADRÃO -->
+                <div class="carousel-slide w-full h-full absolute inset-0 transition-opacity duration-700 ease-in-out active" data-index="0">
+                    <img src="img/hero-1.jpeg" onerror="this.onerror=null; this.src='https://placehold.co/1200x630/FFF0F5/DB7093?text=VERIFIQUE+hero-1.jpeg';" alt="Adesivos Perfeitos - Destaque 1" class="w-full h-full object-cover absolute inset-0">
+                    <div class="absolute inset-0 bg-black bg-opacity-40"></div>
+                </div>
+
+                <!-- SLIDE 2 -->
+                <div class="carousel-slide w-full h-full absolute inset-0 transition-opacity duration-700 ease-in-out" data-index="1">
+                    <img src="img/hero-2.jpeg" onerror="this.onerror=null; this.src='https://placehold.co/1200x630/FF69B4/FFFFFF?text=VERIFIQUE+hero-2.jpeg';" alt="Design Moderno - Destaque 2" class="w-full h-full object-cover absolute inset-0">
+                    <div class="absolute inset-0 bg-pink-premium bg-opacity-30"></div>
+                </div>
+
+                <!-- SLIDE 3 -->
+                <div class="carousel-slide w-full h-full absolute inset-0 transition-opacity duration-700 ease-in-out" data-index="2">
+                    <img src="img/hero-3.jpeg" onerror="this.onerror=null; this.src='https://placehold.co/1200x630/DB7093/FFF0F5?text=VERIFIQUE+hero-3.jpeg';" alt="Adesivos Premium - Destaque 3" class="w-full h-full object-cover absolute inset-0">
+                    <div class="absolute inset-0 bg-deep-rose bg-opacity-40"></div>
+                </div>
+                
+            </div>
+            
+            <!-- TEXTO DO HERO -->
+            <div class="absolute inset-0 z-10 max-w-4xl mx-auto py-8 sm:py-20 md:py-32 px-3 sm:px-4 text-center flex flex-col justify-center h-full">
+                <h1 class="text-lg sm:text-4xl md:text-6xl font-bold mb-2 sm:mb-4 font-serif leading-tight text-white">TRANSFORME SUAS UNHAS COM ADESIVOS PREMIUM</h1>
+                <p class="text-xs sm:text-lg md:text-2xl mb-3 sm:mb-10 opacity-90 text-white">Adesivos de unhas de qualidade profissional com durabilidade de até 14 dias.</p>
+                <a href="#oferta" class="bg-pink-premium hover:bg-deep-rose text-white font-bold py-2 sm:py-4 px-4 sm:px-10 rounded-full text-xs sm:text-lg inline-block transition-transform duration-300 hover:scale-[1.02] shadow-lg w-fit mx-auto">
+                    QUERO MEU KIT AGORA!
+                </a>
+            </div>
+
+            <!-- BOTÕES DE NAVEGAÇÃO -->
+            <button id="carousel-prev" class="absolute top-1/2 left-1 sm:left-4 transform -translate-y-1/2 bg-black/50 hover:bg-black/80 text-white p-1 sm:p-3 rounded-full z-20 transition-colors">
+                <i data-feather="chevron-left" class="w-4 h-4 sm:w-6 sm:h-6"></i>
+            </button>
+            <button id="carousel-next" class="absolute top-1/2 right-1 sm:right-4 transform -translate-y-1/2 bg-black/50 hover:bg-black/80 text-white p-1 sm:p-3 rounded-full z-20 transition-colors">
+                <i data-feather="chevron-right" class="w-4 h-4 sm:w-6 sm:h-6"></i>
+            </button>
+
+            <div id="carousel-indicators" class="absolute bottom-3 sm:bottom-4 left-0 right-0 flex justify-center space-x-1 sm:space-x-2 z-20">
+            </div>
+        </section>
+        
+        <section class="py-6 sm:py-16 bg-white rounded-lg shadow-lg -mt-4 sm:-mt-10 relative z-20 mx-2 sm:mx-4 sm:mx-auto sm:container">
+            <div class="max-w-6xl mx-auto px-3 sm:px-4">
+                <!-- Contador de Vendas/Estoque -->
+                <div class="mb-8 sm:mb-12 grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-6">
+                    <div class="bg-gradient-to-r from-pink-500 to-red-500 p-4 sm:p-6 rounded-xl text-white text-center shadow-lg">
+                        <p class="text-xs sm:text-sm opacity-90 mb-1 sm:mb-2">🎉 VENDAS ESTA SEMANA</p>
+                        <p class="text-2xl sm:text-4xl font-bold"><span data-vendidos>578+</span></p>
+                        <p class="text-sm sm:text-lg opacity-90">kits vendidos</p>
+                    </div>
+                    <div class="bg-gradient-to-r from-deep-rose to-pink-600 p-4 sm:p-6 rounded-xl text-white text-center shadow-lg">
+                        <p class="text-xs sm:text-sm opacity-90 mb-1 sm:mb-2">📦 ESTOQUE LIMITADO</p>
+                        <p class="text-2xl sm:text-4xl font-bold">Apenas <span data-estoque-count>80</span></p>
+                        <p class="text-sm sm:text-lg opacity-90">kits restantes</p>
+                    </div>
+                </div>
+
+                <h2 class="text-xl sm:text-3xl font-bold text-center text-deep-rose mb-6 sm:mb-16">O DIFERENCIAL PINKDETALHE</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-12">
+                    <div class="text-center p-3 sm:p-6 border-b md:border-b-0 md:border-r border-light-blush last:border-b-0 md:last:border-r-0">
+                        <div class="bg-light-blush rounded-full w-14 sm:w-20 h-14 sm:h-20 flex items-center justify-center mx-auto mb-2 sm:mb-4 shadow-md">
+                            <i data-feather="award" class="text-pink-premium w-5 sm:w-8 h-5 sm:h-8"></i>
+                        </div>
+                        <h3 class="text-base sm:text-xl font-semibold mb-2">Durabilidade Comprovada</h3>
+                        <p class="text-gray-600 text-xs sm:text-base">Fidelidade de cor por até 14 dias.</p>
+                    </div>
+                    <div class="text-center p-3 sm:p-6 border-b md:border-b-0 md:border-r border-light-blush last:border-b-0 md:last:border-r-0">
+                        <div class="bg-light-blush rounded-full w-14 sm:w-20 h-14 sm:h-20 flex items-center justify-center mx-auto mb-2 sm:mb-4 shadow-md">
+                            <i data-feather="clock" class="text-pink-premium w-5 sm:w-8 h-5 sm:h-8"></i>
+                        </div>
+                        <h3 class="text-base sm:text-xl font-semibold mb-2">Aplicação Rápida</h3>
+                        <p class="text-gray-600 text-xs sm:text-base">Resultado de salão em 15 minutos.</p>
+                    </div>
+                    <div class="text-center p-3 sm:p-6">
+                        <div class="bg-light-blush rounded-full w-14 sm:w-20 h-14 sm:h-20 flex items-center justify-center mx-auto mb-2 sm:mb-4 shadow-md">
+                            <i data-feather="zap" class="text-pink-premium w-5 sm:w-8 h-5 sm:h-8"></i>
+                        </div>
+                        <h3 class="text-base sm:text-xl font-semibold mb-2">Coleção Exclusiva</h3>
+                        <p class="text-gray-600 text-xs sm:text-base">100+ designs diferentes.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="oferta" class="py-6 sm:py-20 bg-light-blush mx-2 sm:mx-4 sm:mx-auto sm:container">
+            <div class="max-w-6xl mx-auto px-3 sm:px-4">
+                <h2 class="text-xl sm:text-3xl font-bold text-center text-deep-rose mb-2 sm:mb-2">OFERTA DE BOAS-VINDAS</h2>
+                <p class="text-center text-gray-600 text-xs sm:text-lg mb-6 sm:mb-12">Tempo limitado!</p>
+                <!-- GALERIA COMPLETA COM 40 DESIGNS -->
+        <section id="galeria" class="py-6 sm:py-16 bg-white mx-2 sm:mx-4 sm:mx-auto sm:container">
+            <div class="max-w-6xl mx-auto px-3 sm:px-4">
+                <h2 class="text-xl sm:text-3xl font-bold text-center text-deep-rose mb-2 sm:mb-3">🎨 CONHEÇA NOSSA VARIEDADE COMPLETA</h2>
+                <p class="text-center text-gray-600 text-xs sm:text-lg mb-6 sm:mb-12">40 designs exclusivos - Clique para ampliar</p>
+                
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-4">
+                    <!-- Design 1-40 -->
+                    <a href="img/kit-adesivos-1.jpeg" data-lightbox="galeria" data-title="Design 1" class="group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+                        <img src="img/kit-adesivos-1.jpeg" onerror="this.onerror=null; this.src='https://placehold.co/300x300/FF69B4/FFFFFF?text=Design+1';" alt="Design 1" class="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-300">
+                        <div class="absolute inset-0 bg-black/30 group-hover:bg-black/50 transition-colors duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+                            <i data-feather="zoom-in" class="w-5 h-5 sm:w-6 sm:h-6 text-white"></i>
+                        </div>
+                    </a>
+                    <a href="img/kit-adesivos-2.jpeg" data-lightbox="galeria" data-title="Design 2" class="group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+                        <img src="img/kit-adesivos-2.jpeg" onerror="this.onerror=null; this.src='https://placehold.co/300x300/FF69B4/FFFFFF?text=Design+2';" alt="Design 2" class="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-300">
+                        <div class="absolute inset-0 bg-black/30 group-hover:bg-black/50 transition-colors duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+                            <i data-feather="zoom-in" class="w-5 h-5 sm:w-6 sm:h-6 text-white"></i>
+                        </div>
+                    </a>
+                    <a href="img/kit-adesivos-3.jpeg" data-lightbox="galeria" data-title="Design 3" class="group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+                        <img src="img/kit-adesivos-3.jpeg" onerror="this.onerror=null; this.src='https://placehold.co/300x300/FF69B4/FFFFFF?text=Design+3';" alt="Design 3" class="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-300">
+                        <div class="absolute inset-0 bg-black/30 group-hover:bg-black/50 transition-colors duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+                            <i data-feather="zoom-in" class="w-5 h-5 sm:w-6 sm:h-6 text-white"></i>
+                        </div>
+                    </a>
+                    <a href="img/kit-adesivos-4.jpeg" data-lightbox="galeria" data-title="Design 4" class="group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+                        <img src="img/kit-adesivos-4.jpeg" onerror="this.onerror=null; this.src='https://placehold.co/300x300/FF69B4/FFFFFF?text=Design+4';" alt="Design 4" class="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-300">
+                        <div class="absolute inset-0 bg-black/30 group-hover:bg-black/50 transition-colors duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+                            <i data-feather="zoom-in" class="w-5 h-5 sm:w-6 sm:h-6 text-white"></i>
+                        </div>
+                    </a>
+                    <a href="img/kit-adesivos-5.jpeg" data-lightbox="galeria" data-title="Design 5" class="group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+                        <img src="img/kit-adesivos-5.jpeg" onerror="this.onerror=null; this.src='https://placehold.co/300x300/FF69B4/FFFFFF?text=Design+5';" alt="Design 5" class="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-300">
+                        <div class="absolute inset-0 bg-black/30 group-hover:bg-black/50 transition-colors duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+                            <i data-feather="zoom-in" class="w-5 h-5 sm:w-6 sm:h-6 text-white"></i>
+                        </div>
+                    </a>
+                    <a href="img/kit-adesivos-6.jpeg" data-lightbox="galeria" data-title="Design 6" class="group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+                        <img src="img/kit-adesivos-6.jpeg" onerror="this.onerror=null; this.src='https://placehold.co/300x300/FF69B4/FFFFFF?text=Design+6';" alt="Design 6" class="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-300">
+                        <div class="absolute inset-0 bg-black/30 group-hover:bg-black/50 transition-colors duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+                            <i data-feather="zoom-in" class="w-5 h-5 sm:w-6 sm:h-6 text-white"></i>
+                        </div>
+                    </a>
+                    <a href="img/kit-adesivos-7.jpeg" data-lightbox="galeria" data-title="Design 7" class="group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+                        <img src="img/kit-adesivos-7.jpeg" onerror="this.onerror=null; this.src='https://placehold.co/300x300/FF69B4/FFFFFF?text=Design+7';" alt="Design 7" class="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-300">
+                        <div class="absolute inset-0 bg-black/30 group-hover:bg-black/50 transition-colors duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+                            <i data-feather="zoom-in" class="w-5 h-5 sm:w-6 sm:h-6 text-white"></i>
+                        </div>
+                    </a>
+                    <a href="img/kit-adesivos-8.jpeg" data-lightbox="galeria" data-title="Design 8" class="group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+                        <img src="img/kit-adesivos-8.jpeg" onerror="this.onerror=null; this.src='https://placehold.co/300x300/FF69B4/FFFFFF?text=Design+8';" alt="Design 8" class="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-300">
+                        <div class="absolute inset-0 bg-black/30 group-hover:bg-black/50 transition-colors duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+                            <i data-feather="zoom-in" class="w-5 h-5 sm:w-6 sm:h-6 text-white"></i>
+                        </div>
+                    </a>
+                    <a href="img/kit-adesivos-9.jpeg" data-lightbox="galeria" data-title="Design 9" class="group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+                        <img src="img/kit-adesivos-9.jpeg" onerror="this.onerror=null; this.src='https://placehold.co/300x300/FF69B4/FFFFFF?text=Design+9';" alt="Design 9" class="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-300">
+                        <div class="absolute inset-0 bg-black/30 group-hover:bg-black/50 transition-colors duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+                            <i data-feather="zoom-in" class="w-5 h-5 sm:w-6 sm:h-6 text-white"></i>
+                        </div>
+                    </a>
+                    <a href="img/kit-adesivos-10.jpeg" data-lightbox="galeria" data-title="Design 10" class="group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+                        <img src="img/kit-adesivos-10.jpeg" onerror="this.onerror=null; this.src='https://placehold.co/300x300/FF69B4/FFFFFF?text=Design+10';" alt="Design 10" class="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-300">
+                        <div class="absolute inset-0 bg-black/30 group-hover:bg-black/50 transition-colors duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+                            <i data-feather="zoom-in" class="w-5 h-5 sm:w-6 sm:h-6 text-white"></i>
+                        </div>
+                    </a>
+                    <a href="img/kit-adesivos-11.jpeg" data-lightbox="galeria" data-title="Design 11" class="group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+                        <img src="img/kit-adesivos-11.jpeg" onerror="this.onerror=null; this.src='https://placehold.co/300x300/FF69B4/FFFFFF?text=Design+11';" alt="Design 11" class="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-300">
+                        <div class="absolute inset-0 bg-black/30 group-hover:bg-black/50 transition-colors duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+                            <i data-feather="zoom-in" class="w-5 h-5 sm:w-6 sm:h-6 text-white"></i>
+                        </div>
+                    </a>
+                    <a href="img/kit-adesivos-12.jpeg" data-lightbox="galeria" data-title="Design 12" class="group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+                        <img src="img/kit-adesivos-12.jpeg" onerror="this.onerror=null; this.src='https://placehold.co/300x300/FF69B4/FFFFFF?text=Design+12';" alt="Design 12" class="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-300">
+                        <div class="absolute inset-0 bg-black/30 group-hover:bg-black/50 transition-colors duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+                            <i data-feather="zoom-in" class="w-5 h-5 sm:w-6 sm:h-6 text-white"></i>
+                        </div>
+                    </a>
+                    <a href="img/kit-adesivos-13.jpeg" data-lightbox="galeria" data-title="Design 13" class="group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+                        <img src="img/kit-adesivos-13.jpeg" onerror="this.onerror=null; this.src='https://placehold.co/300x300/FF69B4/FFFFFF?text=Design+13';" alt="Design 13" class="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-300">
+                        <div class="absolute inset-0 bg-black/30 group-hover:bg-black/50 transition-colors duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+                            <i data-feather="zoom-in" class="w-5 h-5 sm:w-6 sm:h-6 text-white"></i>
+                        </div>
+                    </a>
+                    <a href="img/kit-adesivos-14.jpeg" data-lightbox="galeria" data-title="Design 14" class="group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+                        <img src="img/kit-adesivos-14.jpeg" onerror="this.onerror=null; this.src='https://placehold.co/300x300/FF69B4/FFFFFF?text=Design+14';" alt="Design 14" class="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-300">
+                        <div class="absolute inset-0 bg-black/30 group-hover:bg-black/50 transition-colors duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+                            <i data-feather="zoom-in" class="w-5 h-5 sm:w-6 sm:h-6 text-white"></i>
+                        </div>
+                    </a>
+                    <a href="img/kit-adesivos-15.jpeg" data-lightbox="galeria" data-title="Design 15" class="group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+                        <img src="img/kit-adesivos-15.jpeg" onerror="this.onerror=null; this.src='https://placehold.co/300x300/FF69B4/FFFFFF?text=Design+15';" alt="Design 15" class="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-300">
+                        <div class="absolute inset-0 bg-black/30 group-hover:bg-black/50 transition-colors duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+                            <i data-feather="zoom-in" class="w-5 h-5 sm:w-6 sm:h-6 text-white"></i>
+                        </div>
+                    </a>
+                    <a href="img/kit-adesivos-16.jpeg" data-lightbox="galeria" data-title="Design 16" class="group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+                        <img src="img/kit-adesivos-16.jpeg" onerror="this.onerror=null; this.src='https://placehold.co/300x300/FF69B4/FFFFFF?text=Design+16';" alt="Design 16" class="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-300">
+                        <div class="absolute inset-0 bg-black/30 group-hover:bg-black/50 transition-colors duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+                            <i data-feather="zoom-in" class="w-5 h-5 sm:w-6 sm:h-6 text-white"></i>
+                        </div>
+                    </a>
+                    <a href="img/kit-adesivos-17.jpeg" data-lightbox="galeria" data-title="Design 17" class="group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+                        <img src="img/kit-adesivos-17.jpeg" onerror="this.onerror=null; this.src='https://placehold.co/300x300/FF69B4/FFFFFF?text=Design+17';" alt="Design 17" class="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-300">
+                        <div class="absolute inset-0 bg-black/30 group-hover:bg-black/50 transition-colors duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+                            <i data-feather="zoom-in" class="w-5 h-5 sm:w-6 sm:h-6 text-white"></i>
+                        </div>
+                    </a>
+                    <a href="img/kit-adesivos-18.jpeg" data-lightbox="galeria" data-title="Design 18" class="group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+                        <img src="img/kit-adesivos-18.jpeg" onerror="this.onerror=null; this.src='https://placehold.co/300x300/FF69B4/FFFFFF?text=Design+18';" alt="Design 18" class="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-300">
+                        <div class="absolute inset-0 bg-black/30 group-hover:bg-black/50 transition-colors duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+                            <i data-feather="zoom-in" class="w-5 h-5 sm:w-6 sm:h-6 text-white"></i>
+                        </div>
+                    </a>
+                    <a href="img/kit-adesivos-19.jpeg" data-lightbox="galeria" data-title="Design 19" class="group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+                        <img src="img/kit-adesivos-19.jpeg" onerror="this.onerror=null; this.src='https://placehold.co/300x300/FF69B4/FFFFFF?text=Design+19';" alt="Design 19" class="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-300">
+                        <div class="absolute inset-0 bg-black/30 group-hover:bg-black/50 transition-colors duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+                            <i data-feather="zoom-in" class="w-5 h-5 sm:w-6 sm:h-6 text-white"></i>
+                        </div>
+                    </a>
+                    <a href="img/kit-adesivos-20.jpeg" data-lightbox="galeria" data-title="Design 20" class="group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+                        <img src="img/kit-adesivos-20.jpeg" onerror="this.onerror=null; this.src='https://placehold.co/300x300/FF69B4/FFFFFF?text=Design+20';" alt="Design 20" class="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-300">
+                        <div class="absolute inset-0 bg-black/30 group-hover:bg-black/50 transition-colors duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+                            <i data-feather="zoom-in" class="w-5 h-5 sm:w-6 sm:h-6 text-white"></i>
+                        </div>
+                    </a>
+                    <a href="img/kit-adesivos-21.jpeg" data-lightbox="galeria" data-title="Design 21" class="group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+                        <img src="img/kit-adesivos-21.jpeg" onerror="this.onerror=null; this.src='https://placehold.co/300x300/FF69B4/FFFFFF?text=Design+21';" alt="Design 21" class="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-300">
+                        <div class="absolute inset-0 bg-black/30 group-hover:bg-black/50 transition-colors duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+                            <i data-feather="zoom-in" class="w-5 h-5 sm:w-6 sm:h-6 text-white"></i>
+                        </div>
+                    </a>
+                    <a href="img/kit-adesivos-22.jpeg" data-lightbox="galeria" data-title="Design 22" class="group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+                        <img src="img/kit-adesivos-22.jpeg" onerror="this.onerror=null; this.src='https://placehold.co/300x300/FF69B4/FFFFFF?text=Design+22';" alt="Design 22" class="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-300">
+                        <div class="absolute inset-0 bg-black/30 group-hover:bg-black/50 transition-colors duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+                            <i data-feather="zoom-in" class="w-5 h-5 sm:w-6 sm:h-6 text-white"></i>
+                        </div>
+                    </a>
+                    <a href="img/kit-adesivos-23.jpeg" data-lightbox="galeria" data-title="Design 23" class="group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+                        <img src="img/kit-adesivos-23.jpeg" onerror="this.onerror=null; this.src='https://placehold.co/300x300/FF69B4/FFFFFF?text=Design+23';" alt="Design 23" class="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-300">
+                        <div class="absolute inset-0 bg-black/30 group-hover:bg-black/50 transition-colors duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+                            <i data-feather="zoom-in" class="w-5 h-5 sm:w-6 sm:h-6 text-white"></i>
+                        </div>
+                    </a>
+                    <a href="img/kit-adesivos-24.jpeg" data-lightbox="galeria" data-title="Design 24" class="group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+                        <img src="img/kit-adesivos-24.jpeg" onerror="this.onerror=null; this.src='https://placehold.co/300x300/FF69B4/FFFFFF?text=Design+24';" alt="Design 24" class="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-300">
+                        <div class="absolute inset-0 bg-black/30 group-hover:bg-black/50 transition-colors duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+                            <i data-feather="zoom-in" class="w-5 h-5 sm:w-6 sm:h-6 text-white"></i>
+                        </div>
+                    </a>
+                    <a href="img/kit-adesivos-25.jpeg" data-lightbox="galeria" data-title="Design 25" class="group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+                        <img src="img/kit-adesivos-25.jpeg" onerror="this.onerror=null; this.src='https://placehold.co/300x300/FF69B4/FFFFFF?text=Design+25';" alt="Design 25" class="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-300">
+                        <div class="absolute inset-0 bg-black/30 group-hover:bg-black/50 transition-colors duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+                            <i data-feather="zoom-in" class="w-5 h-5 sm:w-6 sm:h-6 text-white"></i>
+                        </div>
+                    </a>
+                    <a href="img/kit-adesivos-26.jpeg" data-lightbox="galeria" data-title="Design 26" class="group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+                        <img src="img/kit-adesivos-26.jpeg" onerror="this.onerror=null; this.src='https://placehold.co/300x300/FF69B4/FFFFFF?text=Design+26';" alt="Design 26" class="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-300">
+                        <div class="absolute inset-0 bg-black/30 group-hover:bg-black/50 transition-colors duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+                            <i data-feather="zoom-in" class="w-5 h-5 sm:w-6 sm:h-6 text-white"></i>
+                        </div>
+                    </a>
+                    <a href="img/kit-adesivos-27.jpeg" data-lightbox="galeria" data-title="Design 27" class="group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+                        <img src="img/kit-adesivos-27.jpeg" onerror="this.onerror=null; this.src='https://placehold.co/300x300/FF69B4/FFFFFF?text=Design+27';" alt="Design 27" class="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-300">
+                        <div class="absolute inset-0 bg-black/30 group-hover:bg-black/50 transition-colors duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+                            <i data-feather="zoom-in" class="w-5 h-5 sm:w-6 sm:h-6 text-white"></i>
+                        </div>
+                    </a>
+                    <a href="img/kit-adesivos-28.jpeg" data-lightbox="galeria" data-title="Design 28" class="group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+                        <img src="img/kit-adesivos-28.jpeg" onerror="this.onerror=null; this.src='https://placehold.co/300x300/FF69B4/FFFFFF?text=Design+28';" alt="Design 28" class="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-300">
+                        <div class="absolute inset-0 bg-black/30 group-hover:bg-black/50 transition-colors duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+                            <i data-feather="zoom-in" class="w-5 h-5 sm:w-6 sm:h-6 text-white"></i>
+                        </div>
+                    </a>
+                    <a href="img/kit-adesivos-29.jpeg" data-lightbox="galeria" data-title="Design 29" class="group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+                        <img src="img/kit-adesivos-29.jpeg" onerror="this.onerror=null; this.src='https://placehold.co/300x300/FF69B4/FFFFFF?text=Design+29';" alt="Design 29" class="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-300">
+                        <div class="absolute inset-0 bg-black/30 group-hover:bg-black/50 transition-colors duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+                            <i data-feather="zoom-in" class="w-5 h-5 sm:w-6 sm:h-6 text-white"></i>
+                        </div>
+                    </a>
+                    <a href="img/kit-adesivos-30.jpeg" data-lightbox="galeria" data-title="Design 30" class="group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+                        <img src="img/kit-adesivos-30.jpeg" onerror="this.onerror=null; this.src='https://placehold.co/300x300/FF69B4/FFFFFF?text=Design+30';" alt="Design 30" class="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-300">
+                        <div class="absolute inset-0 bg-black/30 group-hover:bg-black/50 transition-colors duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+                            <i data-feather="zoom-in" class="w-5 h-5 sm:w-6 sm:h-6 text-white"></i>
+                        </div>
+                    </a>
+                    <a href="img/kit-adesivos-31.jpeg" data-lightbox="galeria" data-title="Design 31" class="group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+                        <img src="img/kit-adesivos-31.jpeg" onerror="this.onerror=null; this.src='https://placehold.co/300x300/FF69B4/FFFFFF?text=Design+31';" alt="Design 31" class="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-300">
+                        <div class="absolute inset-0 bg-black/30 group-hover:bg-black/50 transition-colors duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+                            <i data-feather="zoom-in" class="w-5 h-5 sm:w-6 sm:h-6 text-white"></i>
+                        </div>
+                    </a>
+                    <a href="img/kit-adesivos-32.jpeg" data-lightbox="galeria" data-title="Design 32" class="group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+                        <img src="img/kit-adesivos-32.jpeg" onerror="this.onerror=null; this.src='https://placehold.co/300x300/FF69B4/FFFFFF?text=Design+32';" alt="Design 32" class="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-300">
+                        <div class="absolute inset-0 bg-black/30 group-hover:bg-black/50 transition-colors duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+                            <i data-feather="zoom-in" class="w-5 h-5 sm:w-6 sm:h-6 text-white"></i>
+                        </div>
+                    </a>
+                    <a href="img/kit-adesivos-33.jpeg" data-lightbox="galeria" data-title="Design 33" class="group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+                        <img src="img/kit-adesivos-33.jpeg" onerror="this.onerror=null; this.src='https://placehold.co/300x300/FF69B4/FFFFFF?text=Design+33';" alt="Design 33" class="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-300">
+                        <div class="absolute inset-0 bg-black/30 group-hover:bg-black/50 transition-colors duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+                            <i data-feather="zoom-in" class="w-5 h-5 sm:w-6 sm:h-6 text-white"></i>
+                        </div>
+                    </a>
+                    <a href="img/kit-adesivos-34.jpeg" data-lightbox="galeria" data-title="Design 34" class="group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+                        <img src="img/kit-adesivos-34.jpeg" onerror="this.onerror=null; this.src='https://placehold.co/300x300/FF69B4/FFFFFF?text=Design+34';" alt="Design 34" class="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-300">
+                        <div class="absolute inset-0 bg-black/30 group-hover:bg-black/50 transition-colors duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+                            <i data-feather="zoom-in" class="w-5 h-5 sm:w-6 sm:h-6 text-white"></i>
+                        </div>
+                    </a>
+                    <a href="img/kit-adesivos-35.jpeg" data-lightbox="galeria" data-title="Design 35" class="group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+                        <img src="img/kit-adesivos-35.jpeg" onerror="this.onerror=null; this.src='https://placehold.co/300x300/FF69B4/FFFFFF?text=Design+35';" alt="Design 35" class="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-300">
+                        <div class="absolute inset-0 bg-black/30 group-hover:bg-black/50 transition-colors duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+                            <i data-feather="zoom-in" class="w-5 h-5 sm:w-6 sm:h-6 text-white"></i>
+                        </div>
+                    </a>
+                    <a href="img/kit-adesivos-36.jpeg" data-lightbox="galeria" data-title="Design 36" class="group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+                        <img src="img/kit-adesivos-36.jpeg" onerror="this.onerror=null; this.src='https://placehold.co/300x300/FF69B4/FFFFFF?text=Design+36';" alt="Design 36" class="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-300">
+                        <div class="absolute inset-0 bg-black/30 group-hover:bg-black/50 transition-colors duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+                            <i data-feather="zoom-in" class="w-5 h-5 sm:w-6 sm:h-6 text-white"></i>
+                        </div>
+                    </a>
+                    <a href="img/kit-adesivos-37.jpeg" data-lightbox="galeria" data-title="Design 37" class="group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+                        <img src="img/kit-adesivos-37.jpeg" onerror="this.onerror=null; this.src='https://placehold.co/300x300/FF69B4/FFFFFF?text=Design+37';" alt="Design 37" class="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-300">
+                        <div class="absolute inset-0 bg-black/30 group-hover:bg-black/50 transition-colors duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+                            <i data-feather="zoom-in" class="w-5 h-5 sm:w-6 sm:h-6 text-white"></i>
+                        </div>
+                    </a>
+                    <a href="img/kit-adesivos-38.jpeg" data-lightbox="galeria" data-title="Design 38" class="group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+                        <img src="img/kit-adesivos-38.jpeg" onerror="this.onerror=null; this.src='https://placehold.co/300x300/FF69B4/FFFFFF?text=Design+38';" alt="Design 38" class="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-300">
+                        <div class="absolute inset-0 bg-black/30 group-hover:bg-black/50 transition-colors duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+                            <i data-feather="zoom-in" class="w-5 h-5 sm:w-6 sm:h-6 text-white"></i>
+                        </div>
+                    </a>
+                    <a href="img/kit-adesivos-39.jpeg" data-lightbox="galeria" data-title="Design 39" class="group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+                        <img src="img/kit-adesivos-39.jpeg" onerror="this.onerror=null; this.src='https://placehold.co/300x300/FF69B4/FFFFFF?text=Design+39';" alt="Design 39" class="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-300">
+                        <div class="absolute inset-0 bg-black/30 group-hover:bg-black/50 transition-colors duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+                            <i data-feather="zoom-in" class="w-5 h-5 sm:w-6 sm:h-6 text-white"></i>
+                        </div>
+                    </a>
+                    <a href="img/kit-adesivos-40.jpeg" data-lightbox="galeria" data-title="Design 40" class="group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+                        <img src="img/kit-adesivos-40.jpeg" onerror="this.onerror=null; this.src='https://placehold.co/300x300/FF69B4/FFFFFF?text=Design+40';" alt="Design 40" class="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-300">
+                        <div class="absolute inset-0 bg-black/30 group-hover:bg-black/50 transition-colors duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+                            <i data-feather="zoom-in" class="w-5 h-5 sm:w-6 sm:h-6 text-white"></i>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </section>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-12 items-center bg-white p-3 sm:p-8 md:p-12 rounded-xl shadow-2xl border-2 border-pink-premium/30">
+                    <div>
+                        <img src="img/kit-adesivos.jpeg" 
+     onerror="this.onerror=null; this.src='https://placehold.co/640x360/FF69B4/FFFFFF?text=KIT ADESIVOS';" 
+     alt="Kit de adesivos de unhas PinkDetalhe" class="rounded-lg shadow-xl w-full h-auto">
+                    </div>
+                    <div>
+                        <div class="mb-4 sm:mb-6">
+                            <h3 class="text-lg sm:text-3xl font-bold text-deep-rose mb-1">KIT EXCLUSIVO</h3>
+                            <p class="text-gray-500 text-xs sm:text-base">Tudo para começar.</p>
+                        </div>
+                        
+                        <div class="flex flex-wrap items-end mb-4 sm:mb-6 bg-light-blush p-3 sm:p-4 rounded-lg border-l-4 border-pink-premium gap-2">
+                            <span class="text-2xl sm:text-5xl font-extrabold text-pink-premium">R$19,90</span>
+                            <span class="text-gray-500 line-through text-sm sm:text-xl">R$59,80</span>
+                            <span class="bg-red-600 text-white text-xs font-bold px-2 sm:px-3 py-1 rounded-full">50% OFF</span>
+                        </div>
+                        
+                        <ul class="space-y-2 sm:space-y-4 mb-4 sm:mb-8 text-xs sm:text-lg">
+                            <li class="flex items-start">
+                                <i data-feather="check-circle" class="text-green-500 mr-2 sm:mr-3 mt-0.5 w-4 sm:w-5 h-4 sm:h-5 flex-shrink-0"></i>
+                                <span>2 Conjuntos adesivos Premium 100 Unidades</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i data-feather="check-circle" class="text-green-500 mr-2 sm:mr-3 mt-0.5 w-4 sm:w-5 h-4 sm:h-5 flex-shrink-0"></i>
+                                <span>Kit de Preparação Completo</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i data-feather="check-circle" class="text-green-500 mr-2 sm:mr-3 mt-0.5 w-4 sm:w-5 h-4 sm:h-5 flex-shrink-0"></i>
+                                <span>Guia Digital de Aplicação</span>
+                            </li>
+                            <li class="flex items-start font-bold text-pink-premium">
+                                <i data-feather="check-circle" class="text-green-500 mr-2 sm:mr-3 mt-0.5 w-4 sm:w-5 h-4 sm:h-5 flex-shrink-0"></i>
+                                <span>Frete Grátis Brasil</span>
+                            </li>
+                        </ul>
+                        
+                        <button class="w-full bg-pink-premium hover:bg-deep-rose text-white font-bold py-2 sm:py-4 rounded-full text-sm sm:text-xl transition-colors duration-300 shadow-xl hover:shadow-2xl">
+                            COMPRAR AGORA
+                        </button>
+                        
+                        <div class="flex items-center justify-center mt-2 sm:mt-6 space-x-1 sm:space-x-2 flex-wrap gap-1">
+                            <img src="img/visa.png" alt="Visa" class="h-4 sm:h-6 opacity-75">
+                            <img src="img/mastercard.png" alt="Mastercard" class="h-4 sm:h-6 opacity-75">
+                            <img src="img/pix.png" alt="Pix" class="h-4 sm:h-6 opacity-75">
+                            <img src="img/boleto.png" alt="Boleto" class="h-4 sm:h-6 opacity-75">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section> <!-- SEÇÃO DE CLIENTES SATISFEITAS - COM IMAGENS CORRIGIDAS -->
+        <section class="py-6 sm:py-16 bg-white rounded-lg shadow-xl mx-2 sm:mx-4 sm:mx-auto sm:container">
+            <div class="max-w-6xl mx-auto px-3 sm:px-4">
+                <h2 class="text-xl sm:text-3xl font-bold text-center text-deep-rose mb-6 sm:mb-16">⭐ CLIENTES SATISFEITAS</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-8">
+                    
+                    <!-- DEPOIMENTO 1 -->
+                    <div class="bg-light-blush p-3 sm:p-6 rounded-xl border-l-4 border-pink-premium/50 shadow-md">
+                        <div class="flex items-start mb-2 sm:mb-4">
+                            <i data-feather="star" class="w-3 sm:w-5 h-3 sm:h-5 fill-yellow-400 text-yellow-400 mr-1"></i>
+                            <i data-feather="star" class="w-3 sm:w-5 h-3 sm:h-5 fill-yellow-400 text-yellow-400 mr-1"></i>
+                            <i data-feather="star" class="w-3 sm:w-5 h-3 sm:h-5 fill-yellow-400 text-yellow-400 mr-1"></i>
+                            <i data-feather="star" class="w-3 sm:w-5 h-3 sm:h-5 fill-yellow-400 text-yellow-400 mr-1"></i>
+                            <i data-feather="star" class="w-3 sm:w-5 h-3 sm:h-5 fill-yellow-400 text-yellow-400"></i>
+                        </div>
+                        <p class="text-gray-700 italic mb-2 sm:mb-4 text-xs sm:text-base">"Nunca mais gastei com manicure! Os adesivos são lindos e realmente duram semanas. Recomendo demais!"</p>
+                        <div class="flex items-center">
+                            <div class="w-8 sm:w-12 h-8 sm:h-12 rounded-full mr-2 sm:mr-3 border-2 border-pink-premium bg-gradient-to-br from-pink-400 to-pink-600 flex items-center justify-center text-white font-bold text-sm sm:text-base">
+                                AC
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-xs sm:text-sm text-deep-rose">Ana Carolina</h4>
+                                <p class="text-xs text-gray-500">São Paulo, SP</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- DEPOIMENTO 2 -->
+                    <div class="bg-light-blush p-3 sm:p-6 rounded-xl border-l-4 border-pink-premium/50 shadow-md">
+                        <div class="flex items-start mb-2 sm:mb-4">
+                            <i data-feather="star" class="w-3 sm:w-5 h-3 sm:h-5 fill-yellow-400 text-yellow-400 mr-1"></i>
+                            <i data-feather="star" class="w-3 sm:w-5 h-3 sm:h-5 fill-yellow-400 text-yellow-400 mr-1"></i>
+                            <i data-feather="star" class="w-3 sm:w-5 h-3 sm:h-5 fill-yellow-400 text-yellow-400 mr-1"></i>
+                            <i data-feather="star" class="w-3 sm:w-5 h-3 sm:h-5 fill-yellow-400 text-yellow-400 mr-1"></i>
+                            <i data-feather="star" class="w-3 sm:w-5 h-3 sm:h-5 fill-yellow-400 text-yellow-400"></i>
+                        </div>
+                        <p class="text-gray-700 italic mb-2 sm:mb-4 text-xs sm:text-base">"A qualidade é impressionante! Recebi vários elogios das minhas amigas. Já pedi novo kit!"</p>
+                        <div class="flex items-center">
+                            <div class="w-8 sm:w-12 h-8 sm:h-12 rounded-full mr-2 sm:mr-3 border-2 border-pink-premium bg-gradient-to-br from-red-400 to-pink-600 flex items-center justify-center text-white font-bold text-sm sm:text-base">
+                                JS
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-xs sm:text-sm text-deep-rose">Juliana Santos</h4>
+                                <p class="text-xs text-gray-500">Rio de Janeiro, RJ</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- DEPOIMENTO 3 -->
+                    <div class="bg-light-blush p-3 sm:p-6 rounded-xl border-l-4 border-pink-premium/50 shadow-md">
+                        <div class="flex items-start mb-2 sm:mb-4">
+                            <i data-feather="star" class="w-3 sm:w-5 h-3 sm:h-5 fill-yellow-400 text-yellow-400 mr-1"></i>
+                            <i data-feather="star" class="w-3 sm:w-5 h-3 sm:h-5 fill-yellow-400 text-yellow-400 mr-1"></i>
+                            <i data-feather="star" class="w-3 sm:w-5 h-3 sm:h-5 fill-yellow-400 text-yellow-400 mr-1"></i>
+                            <i data-feather="star" class="w-3 sm:w-5 h-3 sm:h-5 fill-yellow-400 text-yellow-400 mr-1"></i>
+                            <i data-feather="star" class="w-3 sm:w-5 h-3 sm:h-5 fill-yellow-400 text-yellow-400"></i>
+                        </div>
+                        <p class="text-gray-700 italic mb-2 sm:mb-4 text-xs sm:text-base">"Perfeito para quem tem pouco tempo! Em 15 minutos minhas unhas ficam lindas por 2 semanas!"</p>
+                        <div class="flex items-center">
+                            <div class="w-8 sm:w-12 h-8 sm:h-12 rounded-full mr-2 sm:mr-3 border-2 border-pink-premium bg-gradient-to-br from-pink-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm sm:text-base">
+                                FL
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-xs sm:text-sm text-deep-rose">Fernanda Lima</h4>
+                                <p class="text-xs text-gray-500">Belo Horizonte, MG</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+    </main>
+    <custom-footer></custom-footer>
+
+    <script src="components/header.js"></script>
+    <script src="components/footer.js"></script>
+    <script src="script.js"></script>
+    <script>feather.replace();</script>
+</body>
+</html>
