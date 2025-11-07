@@ -1,0 +1,109 @@
+/* =======================================
+   Arquivo: style.css
+   Estilos Customizados PinkDetalhe Premium
+   ======================================= */
+
+/* 1. Importação de Fontes do Google Fonts */
+/* Usando Inter para corpo de texto (profissional) e Playfair Display para títulos (elegante/premium) */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Playfair+Display:wght@700;800&display=swap');
+
+/* Configuração base para o body (apesar do Tailwind, é bom ter aqui como fallback/guia) */
+body {
+    font-family: 'Inter', sans-serif;
+    line-height: 1.6;
+    /* Adicione mais estilos base aqui se necessário */
+}
+
+/* 2. Regras de Tipografia para Títulos (Opcional, mas útil para fontes personalizadas) */
+/* Aplicando a fonte Playfair Display a todos os elementos h1, h2, h3, h4 */
+h1, h2, h3, h4 {
+    font-family: 'Playfair Display', serif;
+}
+
+/* 3. Estilos Específicos para Funcionalidades (FAQ Accordion) */
+
+/* Classe que controla a rotação do ícone de seta no FAQ */
+/* O JavaScript vai adicionar e remover esta transformação */
+.bg-white.p-6.rounded-lg.shadow-md h3 i[data-feather="chevron-down"] {
+    transition: transform 0.3s ease; /* Transição suave para a rotação */
+}
+
+/* Estado ativo (quando o conteúdo está visível), o JS deve adicionar um estilo inline, 
+   mas esta regra CSS funciona como fallback e garante a transição */
+/* O script.js já está aplicando a rotação, mas a transição deve ser garantida aqui */
+
+/* Exemplo de estilo para a seção Hero se o fundo não for responsivo */
+/* .hero-section {
+    background-image: url('URL_DA_SUA_IMAGEM');
+    background-size: cover;
+    background-position: center;
+} */// 3. Funcionalidade de Carrossel (Hero Section)
+
+    const slides = document.querySelectorAll('.carousel-slide');
+    const totalSlides = slides.length;
+    let currentSlide = 0;
+
+    const indicatorsContainer = document.getElementById('carousel-indicators');
+    const prevButton = document.getElementById('carousel-prev');
+    const nextButton = document.getElementById('carousel-next');
+
+    // Função para mostrar um slide específico
+    function showSlide(index) {
+        // Oculta todos os slides e remove o estado 'active' dos indicadores
+        slides.forEach(slide => slide.classList.remove('opacity-100'));
+        document.querySelectorAll('.carousel-indicator').forEach(indicator => indicator.classList.remove('bg-pink-premium'));
+
+        // Garante que o índice esteja dentro dos limites
+        if (index >= totalSlides) {
+            currentSlide = 0;
+        } else if (index < 0) {
+            currentSlide = totalSlides - 1;
+        } else {
+            currentSlide = index;
+        }
+
+        // Mostra o slide atual e ativa o indicador
+        slides[currentSlide].classList.add('opacity-100');
+        indicatorsContainer.children[currentSlide].classList.add('bg-pink-premium');
+    }
+
+    // Cria os indicadores (pontos)
+    for (let i = 0; i < totalSlides; i++) {
+        const indicator = document.createElement('button');
+        indicator.classList.add('carousel-indicator', 'w-3', 'h-3', 'rounded-full', 'bg-white/50', 'transition-colors', 'duration-300');
+        indicator.dataset.index = i;
+        
+        indicator.addEventListener('click', () => {
+            showSlide(i);
+            resetInterval();
+        });
+        indicatorsContainer.appendChild(indicator);
+    }
+
+    // Eventos dos botões (setas)
+    prevButton.addEventListener('click', () => {
+        showSlide(currentSlide - 1);
+        resetInterval();
+    });
+
+    nextButton.addEventListener('click', () => {
+        showSlide(currentSlide + 1);
+        resetInterval();
+    });
+
+    // Autoplay
+    let intervalTime = 5000; // 5 segundos
+    let autoPlayInterval = setInterval(() => {
+        showSlide(currentSlide + 1);
+    }, intervalTime);
+
+    // Reseta o temporizador quando há interação do usuário
+    function resetInterval() {
+        clearInterval(autoPlayInterval);
+        autoPlayInterval = setInterval(() => {
+            showSlide(currentSlide + 1);
+        }, intervalTime);
+    }
+
+    // Inicializa o carrossel mostrando o primeiro slide
+    showSlide(0);
