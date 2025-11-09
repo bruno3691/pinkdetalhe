@@ -3,7 +3,6 @@ import fs from 'fs/promises';
 import path from 'path';
 
 // Encontra o caminho para o nosso "banco de dados" JSON
-// process.cwd() é a pasta raiz do seu projeto na Vercel
 const astraDbPath = path.resolve(process.cwd(), 'data', 'products.json');
 
 // Função para ler os produtos do arquivo
@@ -12,7 +11,6 @@ async function getProducts() {
         const data = await fs.readFile(astraDbPath, 'utf8');
         return JSON.parse(data);
     } catch (error) {
-        // Se o arquivo não existir (ex: primeiro uso), retorna um array vazio
         if (error.code === 'ENOENT') {
             return [];
         }
@@ -22,7 +20,10 @@ async function getProducts() {
 
 // Função para salvar os produtos no arquivo
 async function saveProducts(products) {
-    // JSON.stringify(products, null, 2) formata o JSON de forma legível
+    // Garante que a pasta 'data' exista
+    const dir = path.dirname(astraDbPath);
+    await fs.mkdir(dir, { recursive: true });
+    
     await fs.writeFile(astraDbPath, JSON.stringify(products, null, 2), 'utf8');
 }
 
@@ -33,7 +34,6 @@ export default async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-    // Se a requisição for OPTIONS (o navegador checando permissões), apenas responda OK
     if (req.method === 'OPTIONS') {
         return res.status(200).end();
     }
@@ -50,12 +50,18 @@ export default async function handler(req, res) {
             const newProduct = req.body;
             const products = await getProducts();
             
-            // Cria um ID (baseado no timestamp + um número aleatório)
+            // Cria um ID robusto
             newProduct.id = Date.now() + Math.floor(Math.random() * 100);
             
+            // NOVIDADE: Verifica o tamanho da imagem antes de adicionar (apenas um aviso, o limite real é o da Vercel)
+            const base64Size = newProduct.image ? (newProduct.image.length * 0.75) / (1024 * 1024) : 0;
+            if (base64Size > 4.5) {
+                 console.warn(`Imagem grande detectada: ${base64Size.toFixed(2)} MB. Pode haver falha.`);
+            }
+
             products.push(newProduct);
             await saveProducts(products);
-            res.status(201).json(newProduct); // 201 = "Criado com sucesso"
+            res.status(201).json(newProduct);
         }
         
         // --- 3. SE O MÉTODO FOR PUT (Editar um produto) ---
@@ -69,7 +75,6 @@ export default async function handler(req, res) {
                 return res.status(404).json({ message: 'Produto não encontrado' });
             }
             
-            // Atualiza o produto na lista
             products[productIndex] = { ...products[productIndex], ...updatedProductData, id: idToEdit };
             await saveProducts(products);
             res.status(200).json(products[productIndex]);
@@ -90,14 +95,14 @@ export default async function handler(req, res) {
             res.status(200).json({ message: 'Produto deletado com sucesso' });
         }
         
-        // Se for qualquer outro método (ex: PATCH), retorna erro
         else {
             res.setHeader('Allow', ['GET', 'POST', 'PUT', 'DELETE']);
             res.status(405).end(`Método ${req.method} Não Permitido`);
         }
         
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Erro interno do servidor', error: error.message });
+        console.error("ERRO CRÍTICO NO BACKEND:", error);
+        // Retorna 500 (Erro Interno) com a mensagem de erro
+        res.status(500).json({ message: 'Erro interno do servidor ao salvar dados. Provavelmente limite de memória/tempo excedido (Limite: 1GB/60s).', error: error.message });
     }
 }
