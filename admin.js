@@ -39,7 +39,7 @@ let currentEditingId = null;
 
 // --- CONSTANTES ---
 const ADMIN_PASSWORD = 'wepink123'; 
-const DEFAULT_IMAGE_URL = "http://static.photos/pink/320x240/default"; // Imagem Padrão Leve
+const DEFAULT_IMAGE_URL = "http://static.photos/pink/320x240/default"; 
 
 function loginAdmin(password) {
     return password === ADMIN_PASSWORD;
@@ -136,7 +136,7 @@ async function loadProductsToAdminTable() {
     
     const products = await getProductsFromApi();
     
-    productsTableBody.innerHTML = ''; // Limpa o "Carregando..."
+    productsTableBody.innerHTML = ''; 
     
     if (products.length === 0) {
         productsTableBody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--wepink-text-light); padding: 20px;">Nenhum produto cadastrado.</td></tr>`;
@@ -217,9 +217,10 @@ async function handleEditProduct(e) {
     document.getElementById('product-price').value = product.price;
     productCategorySelect.value = product.category; 
     document.getElementById('product-description').value = product.description;
-    // Se a imagem for Base64 (muito longa), ela ainda pode estar no produto, mas a gente não a usa
-    imagePreview.src = product.image.startsWith('data:image') ? DEFAULT_IMAGE_URL : product.image; 
-    previewText.textContent = `Imagem: Apenas URLs Externas são seguras.`;
+    
+    // Mostra o URL da imagem, pois não conseguimos fazer upload seguro de arquivos
+    imagePreview.src = product.image; 
+    previewText.textContent = `Imagem: URL (Upload de arquivo local desativado)`;
     
     addProductBtn.innerHTML = '<i data-feather="refresh-cw" style="width: 18px; height: 18px; margin-right: 5px;"></i> Salvar Edição';
     addProductBtn.style.backgroundColor = 'var(--wepink-pink-dark)'; 
@@ -237,7 +238,8 @@ async function saveOrUpdateProduct() {
     const price = document.getElementById('product-price').value;
     const category = productCategorySelect.value;
     const description = document.getElementById('product-description').value;
-    const imageFile = imageUpload.files[0];
+    // Ignoramos imageFile para novos produtos, pois sabemos que falhará na Vercel
+    // const imageFile = imageUpload.files[0];
 
     if (!name || !price) {
         alert('Por favor, preencha o Nome e o Preço!');
@@ -250,21 +252,14 @@ async function saveOrUpdateProduct() {
 
     let finalImageUrl = DEFAULT_IMAGE_URL;
 
-    // Se for edição e não houver novo arquivo, tenta manter a imagem atual do produto
-    if (currentEditingId !== null && !imageFile) {
+    // Se for edição, tentamos manter o URL de imagem atual.
+    if (currentEditingId !== null) {
         const products = await getProductsFromApi();
         const product = products.find(p => p.id === currentEditingId);
         if (product) {
             finalImageUrl = product.image;
         }
     }
-
-    // MUDANÇA CRÍTICA: Se o usuário subir um arquivo local, ele é IGNORADO (para evitar o erro 500)
-    if (imageFile) {
-        alert("Aviso: Upload de arquivo local desativado. Use uma URL de imagem externa para o campo 'Imagem' após salvar os dados.");
-        finalImageUrl = DEFAULT_IMAGE_URL;
-    }
-
 
     try {
         let response;
@@ -273,7 +268,7 @@ async function saveOrUpdateProduct() {
             price: price,
             category: category,
             description: description,
-            image: finalImageUrl // Sempre envia um URL leve
+            image: finalImageUrl // Sempre envia o URL leve ou o URL anterior
         };
         
         if (currentEditingId !== null) {
@@ -383,10 +378,10 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // --- LÓGICA DE PRODUTO ---
     if (imageUpload) {
+        // A pré-visualização continua funcionando localmente, mas a imagem não é enviada
         imageUpload.addEventListener('change', function() {
             const file = this.files[0];
             if (file) {
-                // Apenas pré-visualiza localmente, mas não usa para upload
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     imagePreview.src = e.target.result;
