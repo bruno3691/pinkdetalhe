@@ -559,7 +559,7 @@
                 </section>
                 
                 <section class="admin-section" style="margin-top: 25px;">
-                    <h2><i data-feather="palette"></i> Paleta de Cores</h2>
+                    <h2><i data-feather="droplet"></i> Paleta de Cores</h2>
                     <div class="form-grid-4-col">
                         <div>
                             <label for="setting-color-primary">Cor Principal (Botões)</label>
@@ -782,7 +782,7 @@
             });
         }
 
-        // --- FUNÇÕES CRUD (AGORA 100% LIVRES DE BASE64 PARA UPLOAD) ---
+        // --- FUNÇÕES CRUD (LOCAL STORAGE) ---
 
         function handleDeleteProduct(e) {
             const idToDelete = parseInt(e.currentTarget.dataset.id, 10); 
@@ -793,14 +793,14 @@
             let products = getProducts();
             products = products.filter(product => product.id !== idToDelete);
             
-            saveProducts(products);
+            saveProducts(products); // Salva no localStorage
             loadProductsToAdminTable(); 
             updateDashboard(); 
             
             if (currentEditingId === idToDelete) {
                 resetForm();
             }
-            alert('Produto deletado com sucesso! O site principal será atualizado.');
+            alert('Produto deletado com sucesso!');
         }
 
         function handleEditProduct(e) {
@@ -820,7 +820,7 @@
             document.getElementById('product-description').value = product.description;
             
             imagePreview.src = product.image; 
-            previewText.textContent = `Imagem: URL (Upload de arquivo local desativado)`;
+            previewText.textContent = `Imagem atual (Edição)`;
             
             addProductBtn.innerHTML = '<i data-feather="refresh-cw" style="width: 18px; height: 18px; margin-right: 5px;"></i> Salvar Edição';
             addProductBtn.style.backgroundColor = 'var(--wepink-pink-dark)'; 
@@ -838,7 +838,7 @@
             const price = document.getElementById('product-price').value;
             const category = productCategorySelect.value;
             const description = document.getElementById('product-description').value;
-            const imageFile = imageUpload.files[0]; // Ignoramos, pois o upload falha na Vercel
+            const imageFile = imageUpload.files[0]; 
 
             if (!name || !price) {
                 alert('Por favor, preencha o Nome e o Preço!');
@@ -849,9 +849,9 @@
             addProductBtn.innerHTML = '<i data-feather="loader" class="feather-spin"></i> Salvando...';
             feather.replace();
 
-            // Novo: Função para processar a imagem localmente (sem enviar Base64)
+            // Processa a imagem (converte para Data URL)
             const processLocalImage = (file) => {
-                return new Promise(resolve => {
+                return new Promise((resolve) => {
                     if (!file) {
                         resolve(null);
                         return;
@@ -862,31 +862,7 @@
                 });
             };
 
-            // Variável que armazena o URL da imagem (ou a Base64 local)
-            let finalImageUrl = DEFAULT_IMAGE_URL;
-
-            // 1. Prioridade: Imagem Nova (apenas para salvar a Base64 no localStorage)
-            if (imageFile) {
-                processLocalImage(imageFile).then(base64Url => {
-                    handleSave(base64Url);
-                });
-                return; // Sai da função principal
-            }
-
-            // 2. Segunda Prioridade: Edição (mantém o URL existente)
-            if (currentEditingId !== null) {
-                const products = getProducts();
-                const product = products.find(p => p.id === currentEditingId);
-                if (product) {
-                    finalImageUrl = product.image;
-                }
-            }
-            
-            // Se não for edição e não tiver arquivo, usa o DEFAULT_IMAGE_URL
-            handleSave(finalImageUrl);
-
-            // Função que faz o salvamento real no localStorage
-            function handleSave(imageUrlToSave) {
+            processLocalImage(imageFile).then(imageUrl => {
                 let products = getProducts();
                 
                 const productData = {
@@ -894,18 +870,32 @@
                     price: price,
                     category: category,
                     description: description,
-                    image: imageUrlToSave 
+                    image: imageUrl // Esta será a Base64 ou null
                 };
 
                 if (currentEditingId !== null) {
                     // --- EDIÇÃO ---
                     const productIndex = products.findIndex(p => p.id === currentEditingId);
-                    if (productIndex === -1) return;
+                    if (productIndex === -1) {
+                         resetForm();
+                         return;
+                    }
                     
+                    // Se nenhuma imagem nova foi enviada, mantém a antiga
+                    if (!imageUrl) {
+                        productData.image = products[productIndex].image;
+                    }
+
                     products[productIndex] = { ...products[productIndex], ...productData, id: currentEditingId };
                     alert(`Produto "${name}" editado com sucesso!`);
                 } else {
                     // --- NOVA ADIÇÃO ---
+                    if (!imageUrl) {
+                        alert('Por favor, selecione a Imagem para um novo produto!');
+                        resetForm();
+                        return;
+                    }
+                    
                     const newId = products.length > 0 ? Math.max(...products.map(p => Number(p.id) || 0)) + 1 : 1;
                     productData.id = newId;
                     products.push(productData);
@@ -916,7 +906,7 @@
                 loadProductsToAdminTable(); 
                 updateDashboard(); 
                 resetForm();
-            }
+            });
         }
 
         // Função para limpar o formulário e resetar o botão "Adicionar"
@@ -1067,7 +1057,7 @@
                             logoUploadInput.value = '';
                             alert('Aparência e nova logo salvas! O site e o painel foram atualizados.');
                         };
-                        reader.readAsDataURL(logoFile);
+                        reader.readAsDataURL(file);
                     } else {
                         saveSettings(settings);
                         alert('Aparência salva! O site e o painel foram atualizados.');
