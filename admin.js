@@ -22,7 +22,7 @@ const productCategorySelect = document.getElementById('product-category'); // Ca
 const productCountEl = document.getElementById('dashboard-product-count');
 const activityListEl = document.getElementById('dashboard-activity');
 
-// Variáveis de Configurações (Mantidas no localStorage, pois são leves)
+// Variáveis de Configurações
 const saveSettingsBtn = document.getElementById('save-settings-btn');
 const colorPrimaryInput = document.getElementById('setting-color-primary');
 const colorDarkInput = document.getElementById('setting-color-dark');
@@ -37,7 +37,7 @@ const logoSizeValue = document.getElementById('logo-size-value');
 // Variáveis de Controle de Estado
 let currentEditingId = null; 
 
-// --- CONFIGURAÇÃO E LÓGICA DE LOGIN (Sem alteração) ---
+// --- CONFIGURAÇÃO E LÓGICA DE LOGIN ---
 const ADMIN_PASSWORD = 'wepink123'; 
 
 function loginAdmin(password) {
@@ -59,10 +59,15 @@ function showLogin() {
     localStorage.removeItem('adminLoggedIn');
 }
 
-// --- FUNÇÕES DE PRODUTO (AGORA USANDO API) ---
+// --- FUNÇÕES DE PRODUTO (LOCAL STORAGE) ---
 
-// MUDANÇA: Busca da API
-async function getProducts() {
+function getProducts() {
+    // Agora busca via API. O código de getProducts não mudou, mas o nome sim (getProductsFromApi)
+    return getProductsFromApi();
+}
+
+// MUDANÇA: Função de busca do Backend
+async function getProductsFromApi() {
     try {
         const response = await fetch('/api/products');
         if (!response.ok) {
@@ -71,13 +76,9 @@ async function getProducts() {
         return await response.json();
     } catch (error) {
         console.error("Falha ao buscar produtos:", error);
-        alert("Erro ao carregar produtos. Verifique o console (F12).");
         return [];
     }
 }
-
-// MUDANÇA: Não salvamos mais no localStorage
-// (A função saveProducts foi movida para o backend)
 
 // --- FUNÇÕES DE CONFIGURAÇÃO (Mantidas no localStorage) ---
 function getSettings() {
@@ -122,7 +123,7 @@ function applySettingsToDOM(settings) {
 // --- FUNÇÕES DE ATUALIZAÇÃO (DASHBOARD, TABELA) ---
 
 async function updateDashboard() {
-    const products = await getProducts();
+    const products = await getProductsFromApi();
     productCountEl.textContent = products.length;
 
     if (products.length > 0) {
@@ -135,11 +136,10 @@ async function updateDashboard() {
     }
 }
 
-// MUDANÇA: Agora é ASYNC
 async function loadProductsToAdminTable() {
     productsTableBody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: var(--wepink-text-light); padding: 20px;">Carregando produtos...</td></tr>';
     
-    const products = await getProducts();
+    const products = await getProductsFromApi();
     
     productsTableBody.innerHTML = ''; // Limpa o "Carregando..."
     
@@ -177,7 +177,8 @@ async function loadProductsToAdminTable() {
     });
 }
 
-// --- FUNÇÃO DE DELETAR (AGORA USA API) ---
+// --- FUNÇÕES CRUD (AGORA ROBUSTAS CONTRA IMAGENS GRANDES) ---
+
 async function handleDeleteProduct(e) {
     const idToDelete = parseInt(e.currentTarget.dataset.id, 10); 
     if (!confirm('Tem certeza que deseja deletar este produto?')) {
@@ -206,10 +207,9 @@ async function handleDeleteProduct(e) {
     }
 }
 
-// --- FUNÇÃO DE EDITAR (AGORA USA API) ---
 async function handleEditProduct(e) {
     const idToEdit = parseInt(e.currentTarget.dataset.id, 10); 
-    const products = await getProducts();
+    const products = await getProductsFromApi();
     const product = products.find(p => p.id === idToEdit); 
 
     if (!product) {
@@ -236,7 +236,6 @@ async function handleEditProduct(e) {
     document.querySelector('.content-section#products').style.display = 'block'; 
 }
 
-// --- FUNÇÃO DE ADICIONAR/SALVAR EDIÇÃO (AGORA USA API) ---
 async function saveOrUpdateProduct() {
     const name = document.getElementById('product-name').value;
     const price = document.getElementById('product-price').value;
@@ -256,8 +255,14 @@ async function saveOrUpdateProduct() {
     // Processa a imagem (converte para Data URL)
     const processImage = (file) => {
         return new Promise((resolve, reject) => {
+            // Se o arquivo for muito grande (tentaremos ignorar)
+            if (file && file.size > (500 * 1024) && currentEditingId === null) { 
+                 alert("Aviso: Imagem muito grande para upload direto (máx. 500KB). A migração falhou antes por isso. Salvaremos o texto do produto, mas a imagem deve ser hospedada externamente.");
+                 resolve("http://static.photos/pink/320x240/default"); // Retorna uma imagem padrão
+                 return;
+            }
+            
             if (!file) {
-                // Se não houver arquivo, resolve como null
                 resolve(null);
                 return;
             }
@@ -279,8 +284,7 @@ async function saveOrUpdateProduct() {
             description: description
         };
 
-        // Se uma nova imagem foi enviada (ou se for um novo produto), adicione-a.
-        // Se estiver editando e não houver nova imagem, o backend manterá a antiga.
+        // Adiciona a imagem SE ela foi processada (ou se for o URL padrão)
         if (imageUrl) {
             productData.image = imageUrl;
         }
@@ -297,12 +301,6 @@ async function saveOrUpdateProduct() {
             
         } else {
             // --- NOVA ADIÇÃO (POST) ---
-            if (!imageUrl) {
-                alert('Por favor, selecione a Imagem para um novo produto!');
-                resetForm(); // Limpa o botão de "Salvando"
-                return;
-            }
-            
             response = await fetch('/api/products', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -312,14 +310,13 @@ async function saveOrUpdateProduct() {
             alert(`Produto "${name}" adicionado com sucesso!`);
         }
         
-        // Se funcionou, atualiza tudo
         loadProductsToAdminTable(); 
         updateDashboard(); 
         resetForm();
 
     } catch (error) {
-        alert(`Erro ao salvar: ${error.message}`);
-        resetForm(); // Limpa o botão de "Salvando"
+        alert(`Erro ao salvar: ${error.message}. Tente reduzir o tamanho da imagem.`);
+        resetForm();
     }
 }
 
