@@ -2,8 +2,7 @@
   "functions": {
     "api/products.js": {
       "maxDuration": 60,
-      "memory": 1024,
-      "max-size": "5mb"
+      "memory": 1024
     }
   }
 }
