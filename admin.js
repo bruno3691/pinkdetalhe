@@ -59,14 +59,8 @@ function showLogin() {
     localStorage.removeItem('adminLoggedIn');
 }
 
-// --- FUNÇÕES DE PRODUTO (LOCAL STORAGE) ---
+// --- FUNÇÕES DE PRODUTO (AGORA USANDO API) ---
 
-function getProducts() {
-    // Agora busca via API. O código de getProducts não mudou, mas o nome sim (getProductsFromApi)
-    return getProductsFromApi();
-}
-
-// MUDANÇA: Função de busca do Backend
 async function getProductsFromApi() {
     try {
         const response = await fetch('/api/products');
@@ -252,43 +246,51 @@ async function saveOrUpdateProduct() {
     addProductBtn.innerHTML = '<i data-feather="loader" class="feather-spin"></i> Salvando...';
     feather.replace();
 
-    // Processa a imagem (converte para Data URL)
-    const processImage = (file) => {
-        return new Promise((resolve, reject) => {
-            // Se o arquivo for muito grande (tentaremos ignorar)
-            if (file && file.size > (500 * 1024) && currentEditingId === null) { 
-                 alert("Aviso: Imagem muito grande para upload direto (máx. 500KB). A migração falhou antes por isso. Salvaremos o texto do produto, mas a imagem deve ser hospedada externamente.");
-                 resolve("http://static.photos/pink/320x240/default"); // Retorna uma imagem padrão
-                 return;
+    // Novo: Função que NÃO TENTA processar a imagem Base64 do arquivo de migração
+    const getFinalImageUrl = async (file) => {
+        // Se houver um novo arquivo (tentativa de upload)
+        if (file) {
+            // Se o arquivo for muito grande, alertamos e retornamos um URL padrão
+            if (file.size > (1000 * 1024)) { // 1000 KB = 1MB (Limite de segurança)
+                 alert("Aviso: Imagem muito grande (>1MB). O upload direto falhou. Usando URL padrão. Por favor, hospede a imagem externamente.");
+                 return "http://static.photos/pink/320x240/default"; 
             }
-            
-            if (!file) {
-                resolve(null);
-                return;
-            }
-            const reader = new FileReader();
-            reader.onload = (e) => resolve(e.target.result);
-            reader.onerror = (e) => reject(e);
-            reader.readAsDataURL(file);
-        });
+            // Se for pequeno, processa (para futuras adições)
+            return new Promise(resolve => {
+                const reader = new FileReader();
+                reader.onload = (e) => resolve(e.target.result);
+                reader.readAsDataURL(file);
+            });
+        } 
+        
+        // Se não há novo arquivo (ou é migração)
+        if (currentEditingId !== null) {
+            // Se estiver editando, pego a imagem que JÁ ESTÁ NO FORMULÁRIO (Base64 da migração)
+            return imagePreview.src;
+        }
+        
+        return "http://static.photos/pink/320x240/default"; // URL padrão para novos produtos sem imagem
     };
 
-    const imageUrl = await processImage(imageFile);
+    const finalImageUrl = await getFinalImageUrl(imageFile);
 
+    // MUDANÇA CRÍTICA: Se for uma migração (currentEditingId é null ou os dados estão vindo do console),
+    // e o URL for Base64 (muito longo), vamos enviar um URL Padrão para não estourar o servidor
+    let finalPayloadImage = finalImageUrl;
+    if (finalImageUrl && finalImageUrl.length > 5000) { // Se o Base64 for muito longo
+        finalPayloadImage = "http://static.photos/pink/320x240/migrated-image"; // URL para quebrar a string gigante
+    }
+    
     try {
         let response;
         const productData = {
             name: name,
             price: price,
             category: category,
-            description: description
+            description: description,
+            image: finalPayloadImage // Envia o URL padronizado
         };
-
-        // Adiciona a imagem SE ela foi processada (ou se for o URL padrão)
-        if (imageUrl) {
-            productData.image = imageUrl;
-        }
-
+        
         if (currentEditingId !== null) {
             // --- EDIÇÃO (PUT) ---
             response = await fetch(`/api/products?id=${currentEditingId}`, {
@@ -315,7 +317,7 @@ async function saveOrUpdateProduct() {
         resetForm();
 
     } catch (error) {
-        alert(`Erro ao salvar: ${error.message}. Tente reduzir o tamanho da imagem.`);
+        alert(`Erro ao salvar: ${error.message}. Tente novamente.`);
         resetForm();
     }
 }
