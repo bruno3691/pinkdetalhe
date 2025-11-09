@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wipink Catálogo - Loja de Produtos</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Open+Sans:wght@400;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+
+    <script>
+        (function() {
+            const settings = JSON.parse(localStorage.getItem('wipinkSettings'));
+            if (!settings) return;
+
+            const root = document.documentElement;
+
+            // 1. Aplicar Cores
+            if (settings.primaryColor) root.style.setProperty('--wepink-pink', settings.primaryColor);
+            if (settings.darkColor) root.style.setProperty('--wepink-pink-dark', settings.darkColor);
+            if (settings.bgColor) root.style.setProperty('--wepink-bg', settings.bgColor);
+            if (settings.textColor) root.style.setProperty('--wepink-text', settings.textColor);
+
+            // 2. Aplicar Fonte
+            let fontFamily = '';
+            if (settings.font === 'roboto') fontFamily = "'Roboto', sans-serif";
+            else if (settings.font === 'montserrat') fontFamily = "'Montserrat', sans-serif";
+            else if (settings.font === 'opensans') fontFamily = "'Open Sans', sans-serif";
+            else fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'; // Padrão
+            
+            root.style.setProperty('--wepink-font-family', fontFamily);
+            
+            // 3. Aplicar Estilo de Card, Logo e Tamanho da Logo (Quando o DOM carregar)
+            document.addEventListener('DOMContentLoaded', () => {
+                const logoEl = document.getElementById('store-logo');
+                if (logoEl) {
+                    if (settings.logoUrl) {
+                        logoEl.src = settings.logoUrl;
+                    }
+                    if (settings.logoSize) {
+                        logoEl.style.height = `${settings.logoSize}px`;
+                    }
+                }
+                
+                if (settings.cardStyle) {
+                     document.body.classList.add('card-style-' + settings.cardStyle);
+                }
+            });
+        })();
+    </script>
+    
+    <link rel="stylesheet" href="style.css"> 
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    
+    <style>
+        /* Variáveis de Cor da Wepink */
+        :root {
+            --wepink-pink: #FF0092; 
+            --wepink-pink-dark: #C90076;
+            --wepink-pink-light: #FFDDEB; 
+            --wepink-bg: #FFFFFF; 
+            --wepink-text: #222222; 
+            --wepink-text-light: #6A6A6A; 
+            --wepink-border: #EEEEEE; 
+            --wepink-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        /* Estilos Globais e Reset Simples */
+        body {
+            font-family: var(--wepink-font-family); /* USA A FONTE DINÂMICA */
+            margin: 0;
+            padding: 0;
+            background-color: var(--wepink-bg); /* USA A COR DINÂMICA */
+            color: var(--wepink-text); /* USA A COR DINÂMICA */
+            line-height: 1.6;
+        }
+
+        .app-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px 30px;
+        }
+
+        /* --- 1. CABEÇALHO (Wepink Style) --- */
+        .wipink-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--wepink-border);
+            margin-bottom: 30px;
+            background-color: var(--wepink-white); 
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .wipink-header .logo {
+            height: 40px; /* Tamanho padrão que será sobrescrito pelo JS */
+            width: auto; /* Mantém a proporção */
+            object-fit: contain;
+            transition: height 0.2s; /* Efeito suave ao carregar */
+        }
+        
+        .wipink-header h1 {
+            display: none; 
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            border: 1px solid var(--wepink-border);
+            border-radius: 25px;
+            padding: 8px 15px;
+            background-color: #f8f9fa; /* Fundo fixo para a busca */
+            max-width: 400px;
+            flex-grow: 1;
+            margin: 0 20px;
+        }
+        
+        .search-box input {
+            border: none;
+            outline: none;
+            background: transparent;
+            font-size: 14px;
+            margin-left: 10px;
+            flex-grow: 1;
+            font-family: var(--wepink-font-family);
+        }
+        
+        .search-box i { color: var(--wepink-text-light); width: 18px; height: 18px; }
+        
+        .header-icons a { text-decoration: none; color: var(--wepink-text); transition: color 0.3s; }
+        .header-icons a:hover { color: var(--wepink-pink); }
+        .header-icons i { margin-left: 15px; cursor: pointer; }
+
+        /* --- 2. ABAS DE CATEGORIA (NOVO) --- */
+        #category-tabs-container {
+            display: flex;
+            flex-wrap: wrap; /* Permite que as abas quebrem a linha em telas menores */
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .category-tab {
+            padding: 8px 18px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--wepink-text-light);
+            background-color: var(--wepink-bg);
+            border: 1px solid var(--wepink-border);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: var(--wepink-font-family);
+        }
+        
+        .category-tab:hover {
+            background-color: var(--wepink-pink-light);
+            color: var(--wepink-pink-dark);
+            border-color: var(--wepink-pink-light);
+        }
+        
+        .category-tab.active {
+            background-color: var(--wepink-pink);
+            color: var(--wepink-white);
+            border-color: var(--wepink-pink);
+        }
+
+        /* --- 3. SEÇÃO DE PRODUTOS --- */
+        .section-title {
+            text-align: center;
+            font-size: 28px;
+            font-weight: 700;
+            margin: 40px 0 20px;
+            color: var(--wepink-pink); 
+        }
+        
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .product-card {
+            background-color: var(--wepink-white);
+            border-radius: 12px;
+            overflow: hidden;
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); 
+            border: 1px solid transparent;
+        }
+        
+        body.card-style-flat .product-card {
+            box-shadow: none;
+            border: 1px solid var(--wepink-border);
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        body.card-style-flat .product-card:hover {
+            box-shadow: none;
+            border-color: var(--wepink-pink);
+        }
+
+
+        .product-image {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            border-bottom: 1px solid var(--wepink-border);
+        }
+
+        .product-info { padding: 15px; }
+        .product-info h3 { font-size: 18px; font-weight: 700; margin: 5px 0; color: var(--wepink-text); }
+        .product-description { color: var(--wepink-text-light); font-size: 14px; margin: 5px 0 10px; }
+        .product-price { font-size: 22px; font-weight: 700; color: var(--wepink-text); margin: 10px 0 15px; }
+
+        /* --- 4. BOTÃO (Wipink Style) --- */
+        .wipink-button {
+            background-color: var(--wepink-pink);
+            color: var(--wepink-white);
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: 700;
+            border-radius: 8px; 
+            cursor: pointer;
+            transition: background-color 0.3s;
+            width: 100%;
+            text-transform: uppercase;
+            font-family: var(--wepink-font-family);
+        }
+
+        .wipink-button:hover {
+            background-color: var(--wepink-pink-dark);
+        }
+        
+        /* Media Query para Responsividade */
+        @media (max-width: 600px) {
+            .wipink-header { flex-direction: column; padding: 10px 0; margin-bottom: 20px; }
+            .search-box { width: 90%; margin: 10px 0 0; }
+            .wipink-header .logo { margin-bottom: 10px; }
+            .products-grid { grid-template-columns: 1fr; }
+        }
+        
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="wipink-header">
+            <img src="http://static.photos/pink/320x240/1" alt="Logo Wepink" class="logo" id="store-logo"> 
+            
+            <h1>Catálogo Wepink</h1>
+            <div class="search-box">
+                <i data-feather="search"></i>
+                <input type="text" placeholder="Buscar produtos e categorias...">
+            </div>
+            <div class="header-icons">
+                 <i data-feather="shopping-cart" style="color: var(--wepink-text)"></i>
+                 <a href="admin.html" title="Acessar Painel Admin">
+                     <i data-feather="user" style="margin-left: 15px;"></i>
+                 </a>
+            </div>
+        </div>
+
+        <div id="category-tabs-container">
+            </div>
+
+        <h2 class="section-title">✨ Nossos Produtos</h2>
+        
+        <div class="products-grid" id="productsGrid">
+            </div>
+        
+    </div>
+    
+    <script src="store.js"></script>
+    
+    <script src="https://huggingface.co/deepsite/deepsite-badge.js"></script>
+</body>
+</html>
