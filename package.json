@@ -1,0 +1,7 @@
+{
+  "name": "pinkdetalhe-backend-files",
+  "version": "1.0.0",
+  "description": "Backend simples para manipulação de arquivos JSON",
+  "main": "api/products.js",
+  "type": "module"
+}
