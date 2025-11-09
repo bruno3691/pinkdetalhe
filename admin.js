@@ -37,8 +37,9 @@ const logoSizeValue = document.getElementById('logo-size-value');
 // Variáveis de Controle de Estado
 let currentEditingId = null; 
 
-// --- CONFIGURAÇÃO E LÓGICA DE LOGIN ---
+// --- CONSTANTES ---
 const ADMIN_PASSWORD = 'wepink123'; 
+const DEFAULT_IMAGE_URL = "http://static.photos/pink/320x240/default"; // Imagem Padrão Leve
 
 function loginAdmin(password) {
     return password === ADMIN_PASSWORD;
@@ -59,7 +60,7 @@ function showLogin() {
     localStorage.removeItem('adminLoggedIn');
 }
 
-// --- FUNÇÕES DE PRODUTO (AGORA USANDO API) ---
+// --- FUNÇÕES DE PRODUTO (API) ---
 
 async function getProductsFromApi() {
     try {
@@ -171,7 +172,7 @@ async function loadProductsToAdminTable() {
     });
 }
 
-// --- FUNÇÕES CRUD (AGORA ROBUSTAS CONTRA IMAGENS GRANDES) ---
+// --- FUNÇÕES CRUD (AGORA 100% LIVRES DE BASE64 PARA UPLOAD) ---
 
 async function handleDeleteProduct(e) {
     const idToDelete = parseInt(e.currentTarget.dataset.id, 10); 
@@ -216,8 +217,9 @@ async function handleEditProduct(e) {
     document.getElementById('product-price').value = product.price;
     productCategorySelect.value = product.category; 
     document.getElementById('product-description').value = product.description;
-    imagePreview.src = product.image;
-    previewText.textContent = `Imagem atual: ${product.name} (Edição)`;
+    // Se a imagem for Base64 (muito longa), ela ainda pode estar no produto, mas a gente não a usa
+    imagePreview.src = product.image.startsWith('data:image') ? DEFAULT_IMAGE_URL : product.image; 
+    previewText.textContent = `Imagem: Apenas URLs Externas são seguras.`;
     
     addProductBtn.innerHTML = '<i data-feather="refresh-cw" style="width: 18px; height: 18px; margin-right: 5px;"></i> Salvar Edição';
     addProductBtn.style.backgroundColor = 'var(--wepink-pink-dark)'; 
@@ -246,41 +248,24 @@ async function saveOrUpdateProduct() {
     addProductBtn.innerHTML = '<i data-feather="loader" class="feather-spin"></i> Salvando...';
     feather.replace();
 
-    // Novo: Função que NÃO TENTA processar a imagem Base64 do arquivo de migração
-    const getFinalImageUrl = async (file) => {
-        // Se houver um novo arquivo (tentativa de upload)
-        if (file) {
-            // Se o arquivo for muito grande, alertamos e retornamos um URL padrão
-            if (file.size > (1000 * 1024)) { // 1000 KB = 1MB (Limite de segurança)
-                 alert("Aviso: Imagem muito grande (>1MB). O upload direto falhou. Usando URL padrão. Por favor, hospede a imagem externamente.");
-                 return "http://static.photos/pink/320x240/default"; 
-            }
-            // Se for pequeno, processa (para futuras adições)
-            return new Promise(resolve => {
-                const reader = new FileReader();
-                reader.onload = (e) => resolve(e.target.result);
-                reader.readAsDataURL(file);
-            });
-        } 
-        
-        // Se não há novo arquivo (ou é migração)
-        if (currentEditingId !== null) {
-            // Se estiver editando, pego a imagem que JÁ ESTÁ NO FORMULÁRIO (Base64 da migração)
-            return imagePreview.src;
+    let finalImageUrl = DEFAULT_IMAGE_URL;
+
+    // Se for edição e não houver novo arquivo, tenta manter a imagem atual do produto
+    if (currentEditingId !== null && !imageFile) {
+        const products = await getProductsFromApi();
+        const product = products.find(p => p.id === currentEditingId);
+        if (product) {
+            finalImageUrl = product.image;
         }
-        
-        return "http://static.photos/pink/320x240/default"; // URL padrão para novos produtos sem imagem
-    };
-
-    const finalImageUrl = await getFinalImageUrl(imageFile);
-
-    // MUDANÇA CRÍTICA: Se for uma migração (currentEditingId é null ou os dados estão vindo do console),
-    // e o URL for Base64 (muito longo), vamos enviar um URL Padrão para não estourar o servidor
-    let finalPayloadImage = finalImageUrl;
-    if (finalImageUrl && finalImageUrl.length > 5000) { // Se o Base64 for muito longo
-        finalPayloadImage = "http://static.photos/pink/320x240/migrated-image"; // URL para quebrar a string gigante
     }
-    
+
+    // MUDANÇA CRÍTICA: Se o usuário subir um arquivo local, ele é IGNORADO (para evitar o erro 500)
+    if (imageFile) {
+        alert("Aviso: Upload de arquivo local desativado. Use uma URL de imagem externa para o campo 'Imagem' após salvar os dados.");
+        finalImageUrl = DEFAULT_IMAGE_URL;
+    }
+
+
     try {
         let response;
         const productData = {
@@ -288,7 +273,7 @@ async function saveOrUpdateProduct() {
             price: price,
             category: category,
             description: description,
-            image: finalPayloadImage // Envia o URL padronizado
+            image: finalImageUrl // Sempre envia um URL leve
         };
         
         if (currentEditingId !== null) {
@@ -317,7 +302,7 @@ async function saveOrUpdateProduct() {
         resetForm();
 
     } catch (error) {
-        alert(`Erro ao salvar: ${error.message}. Tente novamente.`);
+        alert(`Erro ao salvar: ${error.message}.`);
         resetForm();
     }
 }
@@ -401,6 +386,7 @@ document.addEventListener('DOMContentLoaded', function() {
         imageUpload.addEventListener('change', function() {
             const file = this.files[0];
             if (file) {
+                // Apenas pré-visualiza localmente, mas não usa para upload
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     imagePreview.src = e.target.result;
