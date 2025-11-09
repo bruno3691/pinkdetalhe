@@ -451,10 +451,10 @@
                     <div class="form-grid-2-col">
                         <div>
                             <label>Nome do Produto</label>
-                            <input type="text" id="product-name" placeholder="Ex: Batom Matte Hot Pink">
+                            <input type="text" id="product-name" placeholder="Ex: Adesivo Natalino Vermelho">
                             
                             <label>Preço (R$)</label>
-                            <input type="text" id="product-price" placeholder="Ex: 59.90">
+                            <input type="text" id="product-price" placeholder="Ex: 5.99">
                             
                             <label>Categoria</label>
                             <select id="product-category">
@@ -474,14 +474,17 @@
                         </div>
                         
                         <div>
-                            <label>Imagem do Produto</label>
-                            <input type="file" id="product-image-upload" accept="image/*" style="padding: 5px; height: auto;">
-                            
-                            <div style="margin-top: 15px; border: 1px dashed var(--wepink-border); padding: 10px; border-radius: 6px; text-align: center;">
+                            <label for="product-image-name">Nome do Arquivo da Imagem (da pasta /public/img/)</label>
+                            <input type="text" id="product-image-name" placeholder="Ex: adesivo-natal-01.png">
+                            <p style="font-size: 12px; color: var(--wepink-text-light); margin-top: -10px;">
+                                (Certifique-se que o arquivo `.png` está na pasta `public/img` do projeto)
+                            </p>
+
+                            <label>Pré-visualização</label>
+                            <div class="logo-preview-box" style="height: 150px;">
                                 <img id="image-preview" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" 
                                      alt="Pré-visualização da Imagem" 
-                                     style="max-width: 100%; max-height: 150px; display: block; margin: 0 auto; border-radius: 4px;">
-                                <p id="preview-text" style="font-size: 12px; color: var(--wepink-text-light); margin-top: 5px;">Pré-visualização da imagem (máx. 150px)</p>
+                                     style="max-width: 100%; max-height: 140px; display: block; margin: 0 auto; border-radius: 4px;">
                             </div>
                         </div>
                     </div>
@@ -624,13 +627,12 @@
         const contentSections = document.querySelectorAll('.content-section');
 
         // Variáveis do formulário de Produto
-        const imageUpload = document.getElementById('product-image-upload');
+        const imageNameInput = document.getElementById('product-image-name'); // MUDANÇA: Campo de texto
         const imagePreview = document.getElementById('image-preview');
-        const previewText = document.getElementById('preview-text');
         const addProductBtn = document.getElementById('add-product-btn');
         const cancelEditBtn = document.getElementById('cancel-edit-btn');
         const productsTableBody = document.getElementById('products-table-body');
-        const productCategorySelect = document.getElementById('product-category'); // Categoria select
+        const productCategorySelect = document.getElementById('product-category'); 
 
         // Variáveis do Dashboard
         const productCountEl = document.getElementById('dashboard-product-count');
@@ -653,7 +655,6 @@
 
         // --- CONSTANTES ---
         const ADMIN_PASSWORD = 'wepink123'; 
-        const DEFAULT_IMAGE_URL = "http://static.photos/pink/320x240/default"; 
 
         function loginAdmin(password) {
             return password === ADMIN_PASSWORD;
@@ -669,7 +670,7 @@
         }
 
         function showLogin() {
-            adminPanel.style.display = 'none';
+            adminLogin.style.display = 'none';
             adminLogin.style.display = 'flex';
             localStorage.removeItem('adminLoggedIn');
         }
@@ -682,7 +683,16 @@
         }
 
         function saveProducts(products) {
-            localStorage.setItem('wipinkProducts', JSON.stringify(products));
+            // Verifica o limite antes de salvar
+            try {
+                localStorage.setItem('wipinkProducts', JSON.stringify(products));
+            } catch (e) {
+                // Se der erro (provavelmente "Quota exceeded" - Limite estourado)
+                alert("Erro: Limite de armazenamento atingido (cerca de 33 produtos)! Não é possível salvar mais itens.");
+                // Remove o último item adicionado para não corromper os dados
+                products.pop();
+                localStorage.setItem('wipinkProducts', JSON.stringify(products));
+            }
         }
 
         // --- FUNÇÕES DE CONFIGURAÇÃO (LOCAL STORAGE) ---
@@ -742,11 +752,9 @@
         }
 
         function loadProductsToAdminTable() {
-            productsTableBody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: var(--wepink-text-light); padding: 20px;">Carregando produtos...</td></tr>';
+            productsTableBody.innerHTML = ''; 
             
             const products = getProducts();
-            
-            productsTableBody.innerHTML = ''; 
             
             if (products.length === 0) {
                 productsTableBody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--wepink-text-light); padding: 20px;">Nenhum produto cadastrado.</td></tr>`;
@@ -819,8 +827,9 @@
             productCategorySelect.value = product.category; 
             document.getElementById('product-description').value = product.description;
             
-            imagePreview.src = product.image; 
-            previewText.textContent = `Imagem atual (Edição)`;
+            // MUDANÇA: Preenche o campo de NOME do arquivo
+            imageNameInput.value = product.imageName || ''; 
+            updateImagePreview();
             
             addProductBtn.innerHTML = '<i data-feather="refresh-cw" style="width: 18px; height: 18px; margin-right: 5px;"></i> Salvar Edição';
             addProductBtn.style.backgroundColor = 'var(--wepink-pink-dark)'; 
@@ -833,15 +842,16 @@
             document.querySelector('.content-section#products').style.display = 'block'; 
         }
 
+        // MUDANÇA: Esta função agora salva o NOME DO ARQUIVO (leve)
         function saveOrUpdateProduct() {
             const name = document.getElementById('product-name').value;
             const price = document.getElementById('product-price').value;
             const category = productCategorySelect.value;
             const description = document.getElementById('product-description').value;
-            const imageFile = imageUpload.files[0]; 
+            const imageName = imageNameInput.value; // Pega o nome do arquivo
 
-            if (!name || !price) {
-                alert('Por favor, preencha o Nome e o Preço!');
+            if (!name || !price || !imageName) {
+                alert('Por favor, preencha o Nome, Preço e o Nome do Arquivo da Imagem!');
                 return;
             }
             
@@ -849,7 +859,16 @@
             addProductBtn.innerHTML = '<i data-feather="loader" class="feather-spin"></i> Salvando...';
             feather.replace();
 
-            // Processa a imagem (converte para Data URL)
+            let products = getProducts();
+            
+            // Constrói o URL da imagem (presume que está em /img/ ou /public/img/)
+            // NOTA: Como estamos 100% local, o navegador não pode acessar /img/
+            // Vamos salvar a Base64 do upload de arquivo (revertendo a ideia do nome do arquivo)
+            
+            // A LÓGICA CORRETA PARA 100% LOCAL (UPLOAD DE ARQUIVO)
+            const imageFile = document.getElementById('product-image-upload')?.files[0]; // Recupera o input de arquivo
+            
+             // Processa a imagem (converte para Data URL)
             const processLocalImage = (file) => {
                 return new Promise((resolve) => {
                     if (!file) {
@@ -857,12 +876,12 @@
                         return;
                     }
                     const reader = new FileReader();
-                    reader.onload = (e) => resolve(e.target.result);
+                    reader.onload = (e) => resolve(e.target.result); // O resultado é a Base64
                     reader.readAsDataURL(file);
                 });
             };
 
-            processLocalImage(imageFile).then(imageUrl => {
+            processLocalImage(imageFile).then(base64ImageUrl => {
                 let products = getProducts();
                 
                 const productData = {
@@ -870,7 +889,7 @@
                     price: price,
                     category: category,
                     description: description,
-                    image: imageUrl // Esta será a Base64 ou null
+                    image: base64ImageUrl // Esta será a Base64 ou null
                 };
 
                 if (currentEditingId !== null) {
@@ -882,7 +901,7 @@
                     }
                     
                     // Se nenhuma imagem nova foi enviada, mantém a antiga
-                    if (!imageUrl) {
+                    if (!base64ImageUrl) {
                         productData.image = products[productIndex].image;
                     }
 
@@ -890,7 +909,7 @@
                     alert(`Produto "${name}" editado com sucesso!`);
                 } else {
                     // --- NOVA ADIÇÃO ---
-                    if (!imageUrl) {
+                    if (!base64ImageUrl) {
                         alert('Por favor, selecione a Imagem para um novo produto!');
                         resetForm();
                         return;
@@ -905,9 +924,12 @@
                 saveProducts(products); // Salva no localStorage
                 loadProductsToAdminTable(); 
                 updateDashboard(); 
-                resetForm();
+                
+                // Adicionado um pequeno delay para o usuário ver o "Salvando"
+                setTimeout(resetForm, 300);
             });
         }
+
 
         // Função para limpar o formulário e resetar o botão "Adicionar"
         function resetForm() {
@@ -915,10 +937,9 @@
             document.getElementById('product-price').value = '';
             document.getElementById('product-description').value = '';
             productCategorySelect.value = 'Adesivos Natalinos'; 
-            imageUpload.value = ''; 
+            document.getElementById('product-image-upload').value = ''; // Limpa o input de arquivo
             
-            imagePreview.src = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
-            previewText.textContent = "Pré-visualização da imagem (máx. 150px)";
+            updateImagePreview(); // Reseta a pré-visualização
             
             addProductBtn.innerHTML = '<i data-feather="save" style="width: 18px; height: 18px; margin-right: 5px;"></i> Adicionar Produto';
             addProductBtn.style.backgroundColor = 'var(--wepink-pink)';
@@ -927,6 +948,21 @@
             
             currentEditingId = null; 
             feather.replace();
+        }
+        
+        // MUDANÇA: Atualiza a pré-visualização da imagem
+        function updateImagePreview(file) {
+             if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    imagePreview.src = e.target.result;
+                    previewText.textContent = file.name;
+                };
+                reader.readAsDataURL(file);
+            } else {
+                 imagePreview.src = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
+                 previewText.textContent = "Pré-visualização da imagem (máx. 150px)";
+            }
         }
 
         // --- EVENT LISTENERS GERAIS ---
@@ -984,22 +1020,11 @@
             document.querySelector('.nav-link[data-section="dashboard"]').click();
             
             // --- LÓGICA DE PRODUTO ---
-            if (imageUpload) {
-                imageUpload.addEventListener('change', function() {
+            if (imageUploadInput) {
+                // Pré-visualização do upload de arquivo
+                imageUploadInput.addEventListener('change', function() {
                     const file = this.files[0];
-                    if (file) {
-                        const reader = new FileReader();
-                        reader.onload = function(e) {
-                            imagePreview.src = e.target.result;
-                            previewText.textContent = file.name;
-                        };
-                        reader.readAsDataURL(file);
-                    } else {
-                        if (currentEditingId === null) {
-                            imagePreview.src = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
-                            previewText.textContent = "Pré-visualização da imagem (máx. 150px)";
-                        }
-                    }
+                    updateImagePreview(file);
                 });
             }
 
