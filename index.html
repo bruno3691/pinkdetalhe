@@ -177,11 +177,33 @@
     <script>
         // --- CONFIGURAÇÕES DE ADMIN E ESTADO GLOBAL ---
         const ADMIN_USER = "bruno3691";
-        // A senha real 'Ff141414' não está no código. Este é um HASH seguro (simulado para fins de segurança estática).
-        const ADMIN_PASS_HASH = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"; // SHA-256 hash de 'Ff141414'
+        const ADMIN_PASS_HASH = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"; 
         
-        // CORREÇÃO APLICADA: Usando o domínio 'raw.githubusercontent.com' para carregar a imagem diretamente
+        // URL Corrigida (GitHub Raw)
         const GITHUB_BASE_URL = "https://raw.githubusercontent.com/bruno3691/pinkdetalhe/main/assets/";
+
+        // LISTA EXATA DE ARQUIVOS (37 no total)
+        const ALL_ASSET_FILENAMES = [
+            "generated-image (7).png", "image (10).png", "image (11).png", "image (12).png", 
+            "image (13).png", "image (14).png", "image (15).png", "image (16).png", 
+            "image (17).png", "image (18).png", "image (19).png", "image (20).png", 
+            "image (21).png", "image (22).png", "image (23).png", "image (24).png", 
+            "image (25).png", "image (26).png", "image (27).png", "image (28).png", 
+            "image (29).png", "image (3).png", "image (30).png", "image (31).png", 
+            "image (32).png", "image (33).png", "image (34).png", "image (35).png", 
+            "image (36).png", "image (37).png", "image (4).png", "image (5).png", 
+            "image (6).png", "image (7).png", "image (8).png", "image (9).png"
+        ];
+        
+        // FUNÇÃO AUXILIAR: Gera a lista de URLs secundárias (todas exceto a principal)
+        function generateSecondaryImageUrls(principalFileName) {
+            const secondaryList = ALL_ASSET_FILENAMES
+                .filter(name => name !== principalFileName)
+                .map(name => `assets/${name}`); // Mantém o prefixo 'assets/' para o state
+            return secondaryList;
+        }
+
+        const PRINCIPAL_IMAGE_NAME = "generated-image (7).png";
 
         let state = {
             cart: JSON.parse(localStorage.getItem('cart')) || [],
@@ -190,15 +212,16 @@
                 store_phone: "5511999999999", 
                 min_order_value: 19.90,
             },
-            // CORREÇÃO APLICADA: MANTENDO APENAS O PRODUTO 'Kit PinkDetalhe' E ATUALIZANDO A DESCRIÇÃO
+            // ESTADO INICIAL CORRIGIDO: Contém o único produto com todas as 37 imagens
             products: JSON.parse(localStorage.getItem('products')) || [
                 { 
                     id: 1, 
                     name: "Kit PinkDetalhe", 
                     price: 29.90, 
-                    // Os caminhos de assets foram mantidos (corretamente) para o admin, mas a função getProductImageUrl resolve no frontend.
-                    image_url: "assets/generated-image (7).png", 
-                    image_urls: ["assets/image (10).png", "assets/image (11).png", "assets/image (12).png"], 
+                    // Imagem Principal
+                    image_url: `assets/${PRINCIPAL_IMAGE_NAME}`, 
+                    // Imagens Adicionais (36 imagens)
+                    image_urls: generateSecondaryImageUrls(PRINCIPAL_IMAGE_NAME), 
                     description: "O Kit PinkDetalhe traz adesivos exclusivos, glitter de alta qualidade e fitilhos delicados, pensados para deixar qualquer projeto único e cheio de personalidade. ✨ Destaque-se com estilo. 💅 Capriche nos detalhes. 💋 Deixe sua marca em tudo que faz. Estoque limitado — garanta o seu e transforme o simples em especial.", 
                     category: "Kit Completo", 
                     in_stock: true 
@@ -225,7 +248,6 @@
         // FUNÇÃO AUXILIAR: Converte o caminho local (assets/) para a URL pública (GitHub Raw)
         function getProductImageUrl(localPath) {
             if (!localPath) return '';
-            // Se o caminho já for uma URL (e não um caminho local), retorna ele.
             if (localPath.startsWith('http')) return localPath; 
 
             // Remove o prefixo 'assets/' para obter apenas o nome do arquivo
@@ -252,7 +274,7 @@
                 button.classList.remove('border-pink-200');
                 button.classList.add('bg-pink-600', 'text-white', 'hover:bg-pink-700');
             } else {
-                button.innerHTML = '<i class="ph ph-sign-in text-lg"></i><span>Entrar</span>';
+                button.innerHTML = '<i class="ph ph-user text-lg"></i><span>Entrar</span>';
                 button.onclick = () => toggleLogin(true);
                 button.classList.add('border-pink-200');
                 button.classList.remove('bg-pink-600', 'text-white', 'hover:bg-pink-700');
