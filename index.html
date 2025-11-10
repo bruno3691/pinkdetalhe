@@ -221,21 +221,21 @@
         let state = {
             cart: JSON.parse(localStorage.getItem('cart')) || [],
             settings: JSON.parse(localStorage.getItem('settings')) || {
+                // Link do Gateway de Pagamento atualizado
                 payment_gateway_url: "https://go.disruptybr.com.br/nm2bdqrizv",
                 store_phone: "5511999999999", 
                 min_order_value: 19.90,
             },
-            // ESTADO INICIAL CORRIGIDO: Contém o único produto com todas as 37 imagens
+            // Produto principal com a nova descrição e todas as 37 imagens
             products: JSON.parse(localStorage.getItem('products')) || [
                 { 
                     id: 1, 
                     name: "Kit PinkDetalhe", 
                     price: 29.90, 
-                    // Imagem Principal
                     image_url: `assets/${PRINCIPAL_IMAGE_NAME}`, 
-                    // Imagens Adicionais (36 imagens)
                     image_urls: generateSecondaryImageUrls(PRINCIPAL_IMAGE_NAME), 
-                    description: "O Kit PinkDetalhe traz adesivos exclusivos, glitter de alta qualidade e fitilhos delicados, pensados para deixar qualquer projeto único e cheio de personalidade. ✨ Destaque-se com estilo. 💅 Capriche nos detalhes. 💋 Deixe sua marca em tudo que faz. Estoque limitado — garanta o seu e transforme o simples em especial.", 
+                    // NOVA DESCRIÇÃO PROFISSIONAL APLICADA AQUI
+                    description: "Kit PinkDetalhe Profissional oferece 50 itens variados de alta qualidade – 20 Cartelas de Adesivos, 15 Cartelas de Fitilhos e 15 Saquinhos de Glitter (10g) – prontos para criar decorações impecáveis e cheias de personalidade em todos os seus atendimentos.", 
                     category: "Kit Completo", 
                     in_stock: true 
                 }
