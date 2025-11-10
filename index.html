@@ -174,33 +174,77 @@
 
     </div>
 
-    <script>
-        // --- CONFIGURAÇÕES DE ADMIN E ESTADO GLOBAL ---
-        const ADMIN_USER = "bruno3691";
-        const ADMIN_PASS = "Ff141414";
-        
-        let state = {
-            cart: JSON.parse(localStorage.getItem('cart')) || [],
-            settings: JSON.parse(localStorage.getItem('settings')) || {
-                payment_gateway_url: "https://seulinkdepagamento.com.br",
-                store_phone: "5511999999999", 
-                min_order_value: 19.90,
-            },
-            products: JSON.parse(localStorage.getItem('products')) || [
-                // Caminhos de arquivos locais na pasta /assets
-                { id: 1, name: "Kit PinkDetalhe", price: 29.90, image_url: "assets/kit_principal.png", image_urls: ["assets/glitter_pack.png", "assets/fitilhos.png"], description: "O toque perfeito para quem ama brilhar em cada criação. O Kit PinkDetalhe traz adesivos exclusivos, glitter de alta qualidade e fitilhos delicados, pensados para deixar qualquer projeto único e cheio de personalidade. ✨ Destaque-se com estilo. 💅 Capriche nos detalhes. 💋 Deixe sua marca em tudo que faz. Estoque limitado — garanta o seu e transforme o simples em especial.", category: "Kit Completo", in_stock: true },
-                { id: 2, name: "Pack Adesivos Glitter", price: 14.90, image_url: "assets/glitter_pack.png", image_urls: [], category: "Adesivos", in_stock: true },
-                { id: 3, name: "Fitilhos Dourados", price: 9.90, image_url: "assets/fitilhos.png", image_urls: [], category: "Acessórios", in_stock: false }
-            ],
-            orders: JSON.parse(localStorage.getItem('orders')) || [],
-            isLoggedIn: localStorage.getItem('isLoggedIn') === 'true',
-            activeAdminTab: 'add',
-            checkout: {
-                step: 1, // 1: Form, 2: Payment, 3: Complete
-                orderId: null,
-                formData: { customer_name: "", customer_phone: "" }
-            }
-        };
+    <!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PinkDetalhe - Adesivos que encantam</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/phosphor-icons/web"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
+    .cta-button:hover .ph-sparkle { transform: scale(1.1) rotate(15deg); }
+    .tab-active { background-color: #db2777 !important; color: white !important; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1); }
+  </style>
+</head>
+<body class="bg-gradient-to-b from-pink-50 via-white to-pink-50 min-h-screen">
+
+  <div id="app" class="relative"></div>
+  <div id="overlay" class="fixed inset-0 bg-black/30 backdrop-blur-sm z-50 hidden"></div>
+  <!-- Inclua o restante do código HTML do seu paste.txt normalmente aqui -->
+
+  <script>
+    // Estado global e produtos CRUD
+    const ADMINUSER = "bruno3691";
+    const ADMINPASS = "Ff141414";
+    let state = {
+      cart: JSON.parse(localStorage.getItem("cart") || "[]"),
+      settings: JSON.parse(localStorage.getItem("settings") || '{"paymentgatewayurl":"https://seulinkdepagamento.com.br","storephone":"5511999999999","minordervalue":19.90}'),
+      products: [
+        { id: 1, name: "Adesivo 1", price: 14.90, imageurl: "assets/generated-image (7).png", description: "Imagem gerada por IA", category: "PinkDetalhe", instock: true },
+        { id: 2, name: "Adesivo 2", price: 14.90, imageurl: "assets/image (10).png", description: "Adesivo decorativo", category: "PinkDetalhe", instock: true },
+        { id: 3, name: "Adesivo 3", price: 14.90, imageurl: "assets/image (11).png", description: "Adesivo decorativo", category: "PinkDetalhe", instock: true },
+        { id: 4, name: "Adesivo 4", price: 14.90, imageurl: "assets/image (12).png", description: "Adesivo decorativo", category: "PinkDetalhe", instock: true },
+        { id: 5, name: "Adesivo 5", price: 14.90, imageurl: "assets/image (13).png", description: "Adesivo decorativo", category: "PinkDetalhe", instock: true },
+        { id: 6, name: "Adesivo 6", price: 14.90, imageurl: "assets/image (14).png", description: "Adesivo decorativo", category: "PinkDetalhe", instock: true },
+        { id: 7, name: "Adesivo 7", price: 14.90, imageurl: "assets/image (15).png", description: "Adesivo decorativo", category: "PinkDetalhe", instock: true },
+        { id: 8, name: "Adesivo 8", price: 14.90, imageurl: "assets/image (16).png", description: "Adesivo decorativo", category: "PinkDetalhe", instock: true },
+        { id: 9, name: "Adesivo 9", price: 14.90, imageurl: "assets/image (17).png", description: "Adesivo decorativo", category: "PinkDetalhe", instock: true },
+        { id: 10, name: "Adesivo 10", price: 14.90, imageurl: "assets/image (18).png", description: "Adesivo decorativo", category: "PinkDetalhe", instock: true },
+        { id: 11, name: "Adesivo 11", price: 14.90, imageurl: "assets/image (19).png", description: "Adesivo decorativo", category: "PinkDetalhe", instock: true },
+        { id: 12, name: "Adesivo 12", price: 14.90, imageurl: "assets/image (20).png", description: "Adesivo decorativo", category: "PinkDetalhe", instock: true },
+        { id: 13, name: "Adesivo 13", price: 14.90, imageurl: "assets/image (21).png", description: "Adesivo decorativo", category: "PinkDetalhe", instock: true },
+        { id: 14, name: "Adesivo 14", price: 14.90, imageurl: "assets/image (22).png", description: "Adesivo decorativo", category: "PinkDetalhe", instock: true },
+        { id: 15, name: "Adesivo 15", price: 14.90, imageurl: "assets/image (23).png", description: "Adesivo decorativo", category: "PinkDetalhe", instock: true },
+        { id: 16, name: "Adesivo 16", price: 14.90, imageurl: "assets/image (24).png", description: "Adesivo decorativo", category: "PinkDetalhe", instock: true },
+        { id: 17, name: "Adesivo 17", price: 14.90, imageurl: "assets/image (25).png", description: "Adesivo decorativo", category: "PinkDetalhe", instock: true },
+        { id: 18, name: "Adesivo 18", price: 14.90, imageurl: "assets/image (26).png", description: "Adesivo decorativo", category: "PinkDetalhe", instock: true },
+        { id: 19, name: "Adesivo 19", price: 14.90, imageurl: "assets/image (27).png", description: "Adesivo decorativo", category: "PinkDetalhe", instock: true },
+        { id: 20, name: "Adesivo 20", price: 14.90, imageurl: "assets/image (28).png", description: "Adesivo decorativo", category: "PinkDetalhe", instock: true },
+        { id: 21, name: "Adesivo 21", price: 14.90, imageurl: "assets/image (29).png", description: "Adesivo decorativo", category: "PinkDetalhe", instock: true },
+        { id: 22, name: "Adesivo 22", price: 14.90, imageurl: "assets/image (3).png", description: "Adesivo decorativo", category: "PinkDetalhe", instock: true },
+        { id: 23, name: "Adesivo 23", price: 14.90, imageurl: "assets/image (30).png", description: "Adesivo decorativo", category: "PinkDetalhe", instock: true },
+        { id: 24, name: "Adesivo 24", price: 14.90, imageurl: "assets/image (31).png", description: "Adesivo decorativo", category: "PinkDetalhe", instock: true },
+        { id: 25, name: "Adesivo 25", price: 14.90, imageurl: "assets/image (32).png", description: "Adesivo decorativo", category: "PinkDetalhe", instock: true },
+        { id: 26, name: "Adesivo 26", price: 14.90, imageurl: "assets/image (33).png", description: "Adesivo decorativo", category: "PinkDetalhe", instock: true },
+        { id: 27, name: "Adesivo 27", price: 14.90, imageurl: "assets/image (34).png", description: "Adesivo decorativo", category: "PinkDetalhe", instock: true },
+        { id: 28, name: "Adesivo 28", price: 14.90, imageurl: "assets/image (35).png", description: "Adesivo decorativo", category: "PinkDetalhe", instock: true },
+        { id: 29, name: "Adesivo 29", price: 14.90, imageurl: "assets/image (36).png", description: "Adesivo decorativo", category: "PinkDetalhe", instock: true },
+        { id: 30, name: "Adesivo 30", price: 14.90, imageurl: "assets/image (37).png", description: "Adesivo decorativo", category: "PinkDetalhe", instock: true },
+        { id: 31, name: "Adesivo 31", price: 14.90, imageurl: "assets/image (4).png", description: "Adesivo decorativo", category: "PinkDetalhe", instock: true },
+        { id: 32, name: "Adesivo 32", price: 14.90, imageurl: "assets/image (5).png", description: "Adesivo decorativo", category: "PinkDetalhe", instock: true },
+        { id: 33, name: "Adesivo 33", price: 14.90, imageurl: "assets/image (6).png", description: "Adesivo decorativo", category: "PinkDetalhe", instock: true },
+        { id: 34, name: "Adesivo 34", price: 14.90, imageurl: "assets/image (7).png", description: "Adesivo decorativo", category: "PinkDetalhe", instock: true },
+        { id: 35, name: "Adesivo 35", price: 14.90, imageurl: "assets/image (8).png", description: "Adesivo decorativo", category: "PinkDetalhe", instock: true },
+        { id: 36, name: "Adesivo 36", price: 14.90, imageurl: "assets/image (9).png", description: "Adesivo decorativo", category: "PinkDetalhe", instock: true }
+      ],
+      orders: JSON.parse(localStorage.getItem("orders") || "[]"),
+      isLoggedIn: localStorage.getItem("isLoggedIn") === "true",
+      activeAdminTab: "add",
+      checkout: { step: 1, orderId: null, formData: { customername: "", customerphone: "" } }
+    };
 
         function saveState() {
             localStorage.setItem('cart', JSON.stringify(state.cart));
@@ -2061,3 +2105,4 @@
     </script>
 </body>
 </html>
+
