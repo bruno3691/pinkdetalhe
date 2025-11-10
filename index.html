@@ -180,9 +180,8 @@
         // A senha real 'Ff141414' não está no código. Este é um HASH seguro (simulado para fins de segurança estática).
         const ADMIN_PASS_HASH = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"; // SHA-256 hash de 'Ff141414'
         
-        // 1. ADICIONADO: URL Base do seu repositório GitHub para acesso às imagens.
-        // **IMPORTANTE:** Substitua 'SEU_USUARIO', 'SEU_REPOSITORIO' e 'SUA_BRANCH' pelos valores corretos.
-        const GITHUB_BASE_URL = "https://raw.githubusercontent.com/SEU_USUARIO/SEU_REPOSITORIO/SUA_BRANCH/";
+        // CORREÇÃO APLICADA: Configurando a URL base do repositório/assets (RAW)
+        const GITHUB_BASE_URL = "https://raw.githubusercontent.com/bruno3691/pinkdetalhe/main/assets/";
 
         let state = {
             cart: JSON.parse(localStorage.getItem('cart')) || [],
@@ -193,7 +192,7 @@
             },
             products: JSON.parse(localStorage.getItem('products')) || [
                 // Caminhos de arquivos locais na pasta /assets
-                // Mantenho o formato 'assets/nome_do_arquivo.png' para que a lógica de admin continue a mesma.
+                // Mantenho o formato 'assets/nome_do_arquivo.png' para que a lógica de "upload" do admin continue a mesma.
                 { id: 1, name: "Kit PinkDetalhe", price: 29.90, 
                   image_url: "assets/generated-image (7).png", 
                   image_urls: ["assets/image (10).png", "assets/image (11).png", "assets/image (12).png"], 
@@ -227,10 +226,10 @@
             localStorage.setItem('isLoggedIn', state.isLoggedIn);
         }
 
-        // 2. NOVA FUNÇÃO: Converte o caminho local para a URL pública
+        // NOVA FUNÇÃO: Converte o caminho local para a URL pública (usando GITHUB_BASE_URL)
         function getProductImageUrl(localPath) {
             if (!localPath) return '';
-            // Se o caminho já for uma URL (por exemplo, se foi editado manualmente ou por um sistema de upload real), retorna ele.
+            // Se o caminho já for uma URL, retorna ele.
             if (localPath.startsWith('http')) return localPath; 
 
             // Remove o prefixo 'assets/' para obter apenas o nome do arquivo
@@ -320,7 +319,7 @@
         function renderHome(container) {
             const kit = state.products.find(p => p.id === 1) || state.products[0];
             
-            // 3. ALTERADO: Usa a nova função para obter a URL pública
+            // Alterado: Usa a nova função para obter a URL pública
             const productImage = getProductImageUrl(kit.image_url);
             const images = [getProductImageUrl(kit.image_url), ...(kit.image_urls || []).map(getProductImageUrl)].filter(Boolean);
 
@@ -1078,7 +1077,7 @@
             } else {
                 // ESTADO 1: Formulário de Dados do Cliente
                 container.innerHTML = `
-                    <>
+                    <div>
                         <div class="p-6 border-b border-pink-100 w-full">
                             <div class="flex justify-between items-center">
                                 <div>
@@ -1153,7 +1152,7 @@
                                 Ir para Pagamento
                             </button>
                         </form>
-                    </>
+                    </div>
                 `;
             }
         }
