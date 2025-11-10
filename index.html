@@ -190,22 +190,19 @@
                 store_phone: "5511999999999", 
                 min_order_value: 19.90,
             },
+            // CORREÇÃO APLICADA: MANTENDO APENAS O PRODUTO 'Kit PinkDetalhe' E ATUALIZANDO A DESCRIÇÃO
             products: JSON.parse(localStorage.getItem('products')) || [
-                // Caminhos de arquivos locais na pasta /assets
-                { id: 1, name: "Kit PinkDetalhe", price: 29.90, 
-                  image_url: "assets/generated-image (7).png", 
-                  image_urls: ["assets/image (10).png", "assets/image (11).png", "assets/image (12).png"], 
-                  description: "O toque perfeito para quem ama brilhar em cada criação...", category: "Kit Completo", in_stock: true },
-                
-                { id: 2, name: "Pack Adesivos Glitter", price: 14.90, 
-                  image_url: "assets/image (3).png", 
-                  image_urls: ["assets/image (4).png"], 
-                  category: "Adesivos", in_stock: true },
-                
-                { id: 3, name: "Fitilhos Dourados", price: 9.90, 
-                  image_url: "assets/image (5).png", 
-                  image_urls: [], 
-                  category: "Acessórios", in_stock: false }
+                { 
+                    id: 1, 
+                    name: "Kit PinkDetalhe", 
+                    price: 29.90, 
+                    // Os caminhos de assets foram mantidos (corretamente) para o admin, mas a função getProductImageUrl resolve no frontend.
+                    image_url: "assets/generated-image (7).png", 
+                    image_urls: ["assets/image (10).png", "assets/image (11).png", "assets/image (12).png"], 
+                    description: "O Kit PinkDetalhe traz adesivos exclusivos, glitter de alta qualidade e fitilhos delicados, pensados para deixar qualquer projeto único e cheio de personalidade. ✨ Destaque-se com estilo. 💅 Capriche nos detalhes. 💋 Deixe sua marca em tudo que faz. Estoque limitado — garanta o seu e transforme o simples em especial.", 
+                    category: "Kit Completo", 
+                    in_stock: true 
+                }
             ],
             orders: JSON.parse(localStorage.getItem('orders')) || [],
             isLoggedIn: localStorage.getItem('isLoggedIn') === 'true',
@@ -314,6 +311,7 @@
 
         // RENDERIZAÇÃO DA PÁGINA INICIAL
         function renderHome(container) {
+            // Garante que o Kit Completo seja o produto principal
             const kit = state.products.find(p => p.id === 1) || state.products[0];
             
             // Usa a função auxiliar para obter a URL pública
