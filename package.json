@@ -1,7 +1,0 @@
-{
-  "name": "pinkdetalhe-backend",
-  "version": "1.0.0",
-  "description": "Backend para salvar produtos",
-  "main": "api/products.js",
-  "type": "module"
-}
