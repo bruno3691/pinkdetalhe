@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "functions": {
+    "api/*.js": {
+      "runtime": "edge"
+    }
+  },
+  "env": {
+    "TRIBO_TOKEN": "SEU_TOKEN_AQUI"
+  }
+}
